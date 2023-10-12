@@ -22,7 +22,5 @@ class FileListRepository @Inject() (protected val dbConfigProvider: DatabaseConf
     val insertQuery = fileItemTable += fileItem
     dbConfig.db.run(insertQuery)
 
-  def findById(id: Int): Future[Option[FileItem]] = {
+  def findById(id: Int): Future[Option[FileItem]] =
     db.run(fileItemTable.filter(_.id === id).result.headOption)
-  }
-

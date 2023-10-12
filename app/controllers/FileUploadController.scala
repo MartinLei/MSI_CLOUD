@@ -21,4 +21,3 @@ class FileUploadController @Inject()(cc: ControllerComponents, fileListService: 
         BadRequest("File upload failed")
       }
   }
-
