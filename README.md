@@ -5,9 +5,9 @@
 You could upload files. See all uploaded files and also download wanted files.
 
 # Run
-
-For running the server execute 'sbt run'.
-
+1. Start the postgresql container at /dev-tools/posgresql/ ```$ docker compose up```
+2. Run the play server with ```$sbt run```$.:
+::
 # Develop
 
 ## Linting
