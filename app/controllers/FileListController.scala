@@ -10,8 +10,8 @@ class FileListController @Inject() (
     val controllerComponents: ControllerComponents
 ) extends BaseController:
 
-  def getAll: Action[AnyContent] = Action.async { implicit request =>
-    fileListService.getAll().map { item =>
+  def getAllItemMetadata(): Action[AnyContent] = Action.async { implicit request =>
+    fileListService.getAllItemMetadata().map { item =>
       Ok(Json.toJson(item))
     }
   }

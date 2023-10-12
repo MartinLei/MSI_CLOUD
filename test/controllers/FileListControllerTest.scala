@@ -1,6 +1,6 @@
 package controllers
 
-import models.{FileItem, FileItems}
+import models.{FileItem, FileItemsDto}
 import org.mockito.Mockito.when
 import org.scalatestplus.mockito.MockitoSugar
 import org.scalatestplus.play.*
@@ -18,8 +18,8 @@ class FileListControllerTest extends PlaySpec with GuiceOneAppPerTest with Injec
 
     "get all given files" in {
       // setup
-      val expectedFiles = FileItems(List(FileItem(1,"TestElement", "daten")))
-      when(fileListServiceMock.getAll()).thenReturn(expectedFiles)
+      val expectedFiles = FileItemsDto(List(FileItem(1, "TestElement", "daten")))
+      when(fileListServiceMock.getAllItemMetadata()).thenReturn(expectedFiles)
 
       // execute
       val result = controller.getAll.apply(FakeRequest(GET, "/files"))

@@ -3,6 +3,18 @@ package models
 import play.api.libs.json.{Format, Json}
 import slick.jdbc.PostgresProfile.api.*
 
+case class FileItemDto(id: Int, itemName: String, fileName: String, contentType: String)
+
+object FileItemDto:
+  implicit val format: Format[FileItemDto] = Json.format[FileItemDto]
+
+  def from(fileItem: FileItem): FileItemDto = FileItemDto(
+    id = fileItem.id,
+    itemName = fileItem.itemName,
+    fileName = fileItem.fileName,
+    contentType = fileItem.contentType
+  )
+
 case class FileItem(id: Int, itemName: String, fileName: String, contentType: String, data: Array[Byte])
 
 object FileItem:
