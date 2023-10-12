@@ -18,10 +18,10 @@ class FileListController @Inject() (
 
   def downloadFile(id: Int): Action[AnyContent] = Action.async { request =>
     fileListService.getFileItem(id).map {
-      case Some(fileContent) =>
-        Ok(fileContent.data)
-          .as("image/jpeg")
-          .withHeaders("Content-Disposition" -> "attachment; filename=TODO.csv")
+      case Some(fileItem) =>
+        Ok(fileItem.data)
+          .as(fileItem.contentType)
+          .withHeaders("Content-Disposition" -> s"attachment; filename=${fileItem.fileName}")
       case None =>
         NotFound("File not found")
     }
