@@ -17,5 +17,5 @@ class FileListService @Inject() (val fileListRepository: FileListRepository):
       .map(a => FileItems(a))
 
   def uploadFile(filename: String, file: FilePart[TemporaryFile]): Future[Int] =
-    val newItem = new FileItem(3, filename, "data")
+    val newItem = new FileItem(0, filename, "data")
     fileListRepository.save(newItem)
