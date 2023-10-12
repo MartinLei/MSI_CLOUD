@@ -9,12 +9,11 @@ import javax.inject.*
 class FileUploadController @Inject()(cc: ControllerComponents, fileListService: FileListService)
   extends AbstractController(cc):
 
-  def upload: Action[MultipartFormData[Files.TemporaryFile]] = Action(parse.multipartFormData) { request =>
+  def upload(itemName: String): Action[MultipartFormData[Files.TemporaryFile]] = Action(parse.multipartFormData) { request =>
     request.body
       .file("picture")
       .map { file =>
-        val itemId: String = "TODO"
-        fileListService.addFileItem(itemId, file)
+        fileListService.addFileItem(itemName, file)
         Ok("File uploaded")
       }
       .getOrElse {
