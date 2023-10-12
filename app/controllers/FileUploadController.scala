@@ -1,7 +1,7 @@
 package controllers
 
 import play.api.libs.Files
-import play.api.mvc.{AbstractController, Action, ControllerComponents, MultipartFormData}
+import play.api.mvc.*
 import service.FileListService
 
 import java.nio.file.Paths

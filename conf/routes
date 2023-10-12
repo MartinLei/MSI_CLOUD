@@ -8,3 +8,4 @@ GET   /files             controllers.FileListController.getAll()
 
 # upload file
 POST  /upload            controllers.FileUploadController.upload()
+GET   /download/:id      controllers.FileListController.downloadFile(id: Int)

@@ -11,7 +11,18 @@ class FileListController @Inject() (
 ) extends BaseController:
 
   def getAll: Action[AnyContent] = Action.async { implicit request =>
-    fileListService.getAll().map { people =>
-      Ok(Json.toJson(people))
+    fileListService.getAll().map { item =>
+      Ok(Json.toJson(item))
+    }
+  }
+
+  def downloadFile(id: Int): Action[AnyContent] = Action.async { request =>
+    fileListService.getFileItem(id).map {
+      case Some(fileContent) =>
+        Ok(fileContent.data)
+          .as("image/jpeg")
+          .withHeaders("Content-Disposition" -> "attachment; filename=TODO.csv")
+      case None =>
+        NotFound("File not found")
     }
   }
