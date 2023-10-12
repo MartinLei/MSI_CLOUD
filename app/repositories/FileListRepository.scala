@@ -17,3 +17,7 @@ class FileListRepository @Inject() (protected val dbConfigProvider: DatabaseConf
 
   def findAllDB: Future[Seq[FileItem]] =
     dbConfig.db.run(fileItemTable.result)
+
+  def save(fileItem: FileItem): Future[Int] =
+    val insertQuery = fileItemTable.forceInsert(fileItem)
+    dbConfig.db.run(insertQuery)

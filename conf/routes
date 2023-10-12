@@ -4,5 +4,7 @@
 # ~~~~
 
 # Get all files
-GET     /files             controllers.FileListController.getAll()
+GET   /files             controllers.FileListController.getAll()
 
+# upload file
+POST  /upload            controllers.FileUploadController.upload()

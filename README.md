@@ -17,6 +17,10 @@ You could upload files. See all uploaded files and also download wanted files.
 
 Use ```$ sbt scalafmt``` to automatically format all files.
 
+## Debugging
+
+Run server with ```sbt run -jvm-debug 9999``` and connect via remote debugger.
+
 ### Tutorials for scala and play
 
 [Slick db connection](https://blog.rockthejvm.com/slick/)
