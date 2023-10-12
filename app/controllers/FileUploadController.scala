@@ -11,7 +11,7 @@ class FileUploadController @Inject()(cc: ControllerComponents, fileListService: 
 
   def upload(itemName: String): Action[MultipartFormData[Files.TemporaryFile]] = Action(parse.multipartFormData) { request =>
     request.body
-      .file("picture")
+      .file("file")
       .map { file =>
         fileListService.addFileItem(itemName, file)
         Ok("File uploaded")
