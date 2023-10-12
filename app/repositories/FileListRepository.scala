@@ -15,12 +15,5 @@ class FileListRepository @Inject() (protected val dbConfigProvider: DatabaseConf
 
   private val fileItemTable = TableQuery[FileItemTable]
 
-  /** TODO use real db repository.
-    */
-  def findAll(): List[FileItem] = List(
-    FileItem(1L, "Test1", "Datei"),
-    FileItem(2L, "Test2", "Datei")
-  )
-
   def findAllDB: Future[Seq[FileItem]] =
     dbConfig.db.run(fileItemTable.result)
