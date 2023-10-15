@@ -15,6 +15,11 @@ You could upload files. See all uploaded files and also download wanted files.
 
 See conf/routes for available endpoints.
 
+# Used technologies
+- scala3
+- play
+- slick
+
 # Developing
 
 ## Linting
@@ -25,9 +30,10 @@ Use ```$ sbt scalafmt``` to automatically format all files.
 
 Run server with ```sbt run -jvm-debug 9999``` and connect via remote debugger.
 
-### Tutorials for scala and play
+### Tutorials for scala and play with slick
 
 [Slick db connection](https://blog.rockthejvm.com/slick/)
 
 [REST API with play](https://blog.rockthejvm.com/play-framework-http-api-tutorial/)
+
 
