@@ -1,4 +1,5 @@
 ![example workflow](https://github.com/MartinLei/MSI_CLOUD/actions/workflows/qualityCheck.yml/badge.svg?branch=main)
+[![codecov](https://codecov.io/gh/MartinLei/MSI_CLOUD/graph/badge.svg?token=07VSS5XNWE)](https://codecov.io/gh/MartinLei/MSI_CLOUD)
 
 # Cloud Exercise1
 
@@ -16,6 +17,7 @@ You could upload files. See all uploaded files and also download wanted files.
 See conf/routes for available endpoints.
 
 # Used technologies
+
 - scala3
 - play
 - slick
