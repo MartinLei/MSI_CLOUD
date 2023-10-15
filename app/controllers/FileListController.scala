@@ -6,8 +6,8 @@ import service.FileListService
 import javax.inject.Inject
 import scala.concurrent.ExecutionContext.Implicits.global
 class FileListController @Inject() (
-    val fileListService: FileListService,
-    val controllerComponents: ControllerComponents
+    val controllerComponents: ControllerComponents,
+    val fileListService: FileListService
 ) extends BaseController:
 
   def getAllItemMetadata(): Action[AnyContent] = Action.async { implicit request =>
