@@ -6,8 +6,8 @@ import service.FileListService
 
 import javax.inject.*
 
-class FileUploadController @Inject()(cc: ControllerComponents, fileListService: FileListService)
-  extends AbstractController(cc):
+class FileUploadController @Inject() (cc: ControllerComponents, fileListService: FileListService)
+    extends AbstractController(cc):
 
   def upload(itemName: String): Action[MultipartFormData[Files.TemporaryFile]] = Action(parse.multipartFormData) {
     request =>
