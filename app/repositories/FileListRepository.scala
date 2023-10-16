@@ -16,11 +16,15 @@ class FileListRepository @Inject() (protected val dbConfigProvider: DatabaseConf
   private val fileItemTable = TableQuery[FileItemTable]
 
   def findAll: Future[Seq[FileItem]] =
-    dbConfig.db.run(fileItemTable.result)
+    db.run(fileItemTable.result)
 
   def save(fileItem: FileItem): Future[Int] =
     val insertQuery = fileItemTable += fileItem
-    dbConfig.db.run(insertQuery)
+    db.run(insertQuery)
 
   def findById(id: Int): Future[Option[FileItem]] =
     db.run(fileItemTable.filter(_.id === id).result.headOption)
+
+  def removeById(id: Int): Future[Int] =
+    val removeQuery = fileItemTable.filter(_.id === id).delete
+    db.run(removeQuery)
