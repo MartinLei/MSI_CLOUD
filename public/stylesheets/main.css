@@ -1,0 +1,29 @@
+.test {
+    background-color: red;
+    padding-left: 20px;
+}
+
+.search {
+
+    display: inline-block;
+    padding-right: 20px;
+}
+
+.searchbox {
+    float: left;
+}
+
+.containerstyle {
+    padding-top: 30px;
+    padding-bottom: 30px;
+}
+
+.center-content {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.center-content > * {
+    margin-left: 50px;
+    margin-right: 50px;
+}
