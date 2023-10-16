@@ -18,5 +18,5 @@ POST  /upload            controllers.FileUploadController.upload()
 # download file with given id - http://localhost:9000/download/2
 GET   /download/:id      controllers.FileListController.downloadFile(id: Int)
 
-## TODO
-#POST /delete/:id
+# delete file with given id - http://localhost:9000/delete/2
+POST /delete/:id         controllers.FileDeleteController.delete(id: Int)
