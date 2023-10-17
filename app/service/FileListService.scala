@@ -6,8 +6,6 @@ import play.api.mvc.MultipartFormData.*
 import repositories.FileListRepository
 
 import java.nio.file.{Files, Paths}
-import java.sql.Timestamp
-import java.time.LocalDateTime
 import javax.inject.Inject
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
@@ -17,6 +15,13 @@ class FileListService @Inject() (val fileListRepository: FileListRepository):
   def getAllItemMetadata(): Future[FileItemsDto] =
     fileListRepository.findAll
       .map(items => items.map(item => FileItemDto.from(item)))
+      .map(itemsDto => FileItemsDto(itemsDto))
+
+  def search(name: String): Future[FileItemsDto] =
+    fileListRepository.findAll
+      .map(items => items
+        .filter(item => item.itemName.contains(name)  || item.fileName.contains(name))
+        .map(item => FileItemDto.from(item)))
       .map(itemsDto => FileItemsDto(itemsDto))
 
   def addFileItem(itemName: String, file: FilePart[TemporaryFile]): Future[Int] =
