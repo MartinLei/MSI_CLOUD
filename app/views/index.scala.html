@@ -28,7 +28,7 @@
     <div class="container containerstyle">
         <div class="row">
             <div class="col center-content">
-            @helper.form(action = routes.FileUploadController.upload(), Symbol("enctype") -> "multipart/form-data") {
+            @helper.form(action = routes.FileUploadController.upload("itemName"), Symbol("enctype") -> "multipart/form-data") {
 
                 <input type="file" name="file" id="hiddenInput" style="display: none;">
                 <button class="btn btn-primary" id="triggerButton" type="button" style="margin-right: 50px">Upload File</button>

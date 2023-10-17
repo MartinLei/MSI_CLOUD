@@ -19,8 +19,8 @@ class FileListControllerTest extends PlaySpec with GuiceOneAppPerTest with Injec
 
     "get all given files" in {
       // setup
-      val expectedFiles = FileItemsDto(List(FileItemDto(1, "itemName", "fileName", "contentType", "date")))
-      when(fileListServiceMock.getAllItemMetadata()).thenReturn(Future.successful(expectedFiles))
+      val expectedFiles = FileItemsDto(List(FileItemDto(1, "itemName", "fileName", "contentType")))
+      when(fileListServiceMock.getAllItemMetadata).thenReturn(Future.successful(expectedFiles))
 
       // execute
       val result = sut.getAllItemMetadata().apply(FakeRequest(GET, "/files"))
@@ -32,11 +32,30 @@ class FileListControllerTest extends PlaySpec with GuiceOneAppPerTest with Injec
     }
   }
 
+  "/search GET" should {
+
+    "get all given files with given name" in {
+      // setup
+      val expectedFiles = FileItemsDto(List(FileItemDto(1, "itemName", "fileName", "contentType")))
+      when(fileListServiceMock.search("itemName")).thenReturn(Future.successful(expectedFiles))
+
+      // execute
+      val result = sut.search("itemName").apply(FakeRequest(GET, "/search"))
+
+      // verify
+
+      status(result) mustBe OK
+      contentType(result) mustBe Some("application/json")
+      contentAsJson(result) mustBe Json.toJson(expectedFiles)
+    }
+  }
+
+
   "/download/:id GET" should {
 
     "download given file" in {
       // setup
-      val expectedFile = FileItem(1, "itemName", "fileName", "text/plain", Array[Byte](1), "date")
+      val expectedFile = FileItem(1, "itemName", "fileName", "text/plain", Array[Byte](1))
       when(fileListServiceMock.getFileItem(1)).thenReturn(Future.successful(Some(expectedFile)))
 
       // execute

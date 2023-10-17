@@ -6,17 +6,24 @@ import play.api.mvc.MultipartFormData.*
 import repositories.FileListRepository
 
 import java.nio.file.{Files, Paths}
-import java.sql.Timestamp
-import java.time.LocalDateTime
 import javax.inject.Inject
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 class FileListService @Inject() (val fileListRepository: FileListRepository):
 
-  def getAllItemMetadata(): Future[FileItemsDto] =
+  def getAllItemMetadata: Future[FileItemsDto] =
     fileListRepository.findAll
       .map(items => items.map(item => FileItemDto.from(item)))
+      .map(itemsDto => FileItemsDto(itemsDto))
+
+  def search(name: String): Future[FileItemsDto] =
+    fileListRepository.findAll
+      .map(items =>
+        items
+          .filter(item => item.itemName.contains(name) || item.fileName.contains(name))
+          .map(item => FileItemDto.from(item))
+      )
       .map(itemsDto => FileItemsDto(itemsDto))
 
   def addFileItem(itemName: String, file: FilePart[TemporaryFile]): Future[Int] =
@@ -25,10 +32,8 @@ class FileListService @Inject() (val fileListRepository: FileListRepository):
     val fileName: String = Paths.get(file.filename).getFileName.toString
     val contentType: String = file.contentType.getOrElse("text/plain")
     val data: Array[Byte] = Files.readAllBytes(file.ref.path)
-//    val date: Timestamp = Timestamp.valueOf(LocalDateTime.now())
-    val date = "dateTest"
 
-    val newItem = new FileItem(0, itemName, fileName, contentType, data, date)
+    val newItem = new FileItem(0, itemName, fileName, contentType, data)
     fileListRepository.save(newItem)
 
   def getFileItem(id: Int): Future[Option[FileItem]] =

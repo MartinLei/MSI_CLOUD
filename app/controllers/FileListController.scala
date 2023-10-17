@@ -1,6 +1,6 @@
 package controllers
 import play.api.libs.json.Json
-import play.api.mvc.{Action, AnyContent, BaseController, ControllerComponents, Request}
+import play.api.mvc.*
 import service.FileListService
 
 import javax.inject.Inject
@@ -15,7 +15,13 @@ class FileListController @Inject() (
   }
 
   def getAllItemMetadata(): Action[AnyContent] = Action.async { implicit request =>
-    fileListService.getAllItemMetadata().map { item =>
+    fileListService.getAllItemMetadata.map { item =>
+      Ok(Json.toJson(item))
+    }
+  }
+
+  def search(name: String): Action[AnyContent] = Action.async { implicit request =>
+    fileListService.search(name).map { item =>
       Ok(Json.toJson(item))
     }
   }

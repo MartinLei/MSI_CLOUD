@@ -1,9 +1,7 @@
 package controllers
 
-import play.api.libs.Files
 import play.api.mvc.*
 import service.FileListService
-import scala.util.{Failure, Success}
 
 import javax.inject.*
 import scala.concurrent.ExecutionContext.Implicits.global
