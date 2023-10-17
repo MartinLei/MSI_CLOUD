@@ -11,7 +11,7 @@ GET     /                           controllers.FileListController.index()
 GET     /files                      controllers.FileListController.getAllItemMetadata()
 
 # search for a name - http://localhost:9000/search?name=Test
-GET    /search:name                 controllers.FileListController.search(name: String)
+GET    /search                      controllers.FileListController.search(name: String)
 
 # upload file with a name - http://localhost:9000/upload?itemName=Test
 # Note: Postmann add picture at Body with key file
