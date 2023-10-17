@@ -10,11 +10,11 @@ $(document).ready(function () {
             const itemId = item.id;
 
             // Create a new row for each item
-            const itemRow = $('<div class="row">');
+            const itemRow = $('<div class="row" style="padding: 5px">');
 
             // Create a column for fileName
-            const fileNameColumn = $('<div class="col">');
-            fileNameColumn.html(`<p><strong>File Name:</strong> ${fileName}</p>`);
+            const fileNameColumn = $('<div class="col" >');
+            fileNameColumn.html(`<p id="${fileName}"><strong>File Name:</strong> ${fileName}</p>`);
 
             // Create a column for contentType
             const contentTypeColumn = $('<div class="col">');
@@ -39,8 +39,6 @@ $(document).ready(function () {
                     url: `/delete/${itemId}`,
                 });
             });
-
-
             // Append the buttons to the button column
             buttonColumn.append(downloadButton);
             buttonColumn.append(deleteButton);
@@ -52,7 +50,6 @@ $(document).ready(function () {
 
             // Append the item row to the data-display div
             $('#data-display').append(itemRow);
-        });
     });
 });
 
@@ -76,4 +73,31 @@ triggerButton.addEventListener('click', function() {
     // Trigger a click event on the hidden input
     hiddenInput.click();
 });
+
+const searchButton = document.getElementById('searchButton');
+
+const inputText = document.getElementById('searchInput');
+
+    searchButton.addEventListener('click', function () {
+
+        let searchTerm = inputText.value;
+
+        const pList = document.getElementsByClassName("row");
+        const pArray = Array.from(pList)
+        // resets all border styles
+        pArray.forEach(pItem => {
+            pItem.style.border = "none"
+        })
+
+        data.items.forEach(item => {
+            const fileName = item.fileName;
+            if(fileName === searchTerm) {
+                let searchResult =document.getElementById(searchTerm).parentElement.parentElement;
+                searchResult.style.borderStyle = "ridge";
+                searchResult.style.borderColor = "red";
+            }
+        })
+    });
+})
+
 
