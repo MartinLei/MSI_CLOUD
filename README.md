@@ -25,15 +25,19 @@ See conf/routes for available endpoints.
 - scala3
 - javascript
 
+## Frameworks
+- play for the backend part
+- vue.js for the frontend part
+
 ## Run-tme environment
 - jvm 21 for the play backend
 - sbt 1.9.6 for scala3
 - npm 10.2.0 for the vue.js frontend
-- docker for the db
+- docker for the postgresql db
 
 ## Database
 
-- postgresql 16 via docker container
+- postgresql 16 
 
 # Developing
 
