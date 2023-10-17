@@ -32,10 +32,8 @@ class FileListService @Inject() (val fileListRepository: FileListRepository):
     val fileName: String = Paths.get(file.filename).getFileName.toString
     val contentType: String = file.contentType.getOrElse("text/plain")
     val data: Array[Byte] = Files.readAllBytes(file.ref.path)
-//    val date: Timestamp = Timestamp.valueOf(LocalDateTime.now())
-    val date = "dateTest"
 
-    val newItem = new FileItem(0, itemName, fileName, contentType, data, date)
+    val newItem = new FileItem(0, itemName, fileName, contentType, data)
     fileListRepository.save(newItem)
 
   def getFileItem(id: Int): Future[Option[FileItem]] =
