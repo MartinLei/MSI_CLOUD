@@ -15,7 +15,7 @@ class FileListController @Inject() (
   }
 
   def getAllItemMetadata(): Action[AnyContent] = Action.async { implicit request =>
-    fileListService.getAllItemMetadata().map { item =>
+    fileListService.getAllItemMetadata.map { item =>
       Ok(Json.toJson(item))
     }
   }

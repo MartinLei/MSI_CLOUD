@@ -12,7 +12,7 @@ import scala.concurrent.Future
 
 class FileListService @Inject() (val fileListRepository: FileListRepository):
 
-  def getAllItemMetadata(): Future[FileItemsDto] =
+  def getAllItemMetadata: Future[FileItemsDto] =
     fileListRepository.findAll
       .map(items => items.map(item => FileItemDto.from(item)))
       .map(itemsDto => FileItemsDto(itemsDto))

@@ -20,10 +20,25 @@ class FileListServiceTest extends PlaySpec with GuiceOneAppPerTest with Injectin
   val fileListRepositoryMock: FileListRepository = mock[FileListRepository]
   val sut = new FileListService(fileListRepositoryMock)
 
+  "getAllItemMetadata" should {
+    "find all items" in {
+      // setup
+      val file1 = FileItem(1, "itemName1", "fileName1", "contentType", Array(1), "date")
+      val file2 = FileItem(2, "itemName2", "fileName2", "contentType", Array(1), "date")
+      when(fileListRepositoryMock.findAll).thenReturn(Future.successful(Seq(file1, file2)))
+
+      // execute
+      val result = await(sut.getAllItemMetadata)
+
+      // verify
+      var expected = FileItemsDto(Seq(FileItemDto.from(file1),FileItemDto.from(file2)))
+      result shouldBe expected
+    }
+  }
+
   "search" should {
 
     "find file with same itemName" in {
-
       // setup
       val file1 = FileItem(1, "itemName1", "fileName1", "contentType", Array(1), "date")
       val file2 = FileItem(2, "itemName2", "fileName2", "contentType", Array(1), "date")
@@ -38,7 +53,6 @@ class FileListServiceTest extends PlaySpec with GuiceOneAppPerTest with Injectin
     }
 
     "find file with same fileName" in {
-
       // setup
       val file1 = FileItem(1, "itemName1", "fileName1", "contentType", Array(1), "date")
       val file2 = FileItem(2, "itemName2", "fileName2", "contentType", Array(1), "date")

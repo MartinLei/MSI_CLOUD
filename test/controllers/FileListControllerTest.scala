@@ -20,7 +20,7 @@ class FileListControllerTest extends PlaySpec with GuiceOneAppPerTest with Injec
     "get all given files" in {
       // setup
       val expectedFiles = FileItemsDto(List(FileItemDto(1, "itemName", "fileName", "contentType", "date")))
-      when(fileListServiceMock.getAllItemMetadata()).thenReturn(Future.successful(expectedFiles))
+      when(fileListServiceMock.getAllItemMetadata).thenReturn(Future.successful(expectedFiles))
 
       // execute
       val result = sut.getAllItemMetadata().apply(FakeRequest(GET, "/files"))
