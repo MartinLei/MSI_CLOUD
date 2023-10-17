@@ -16,7 +16,7 @@ class FileUploadController @Inject() (cc: ControllerComponents, fileListService:
         .file("file")
         .map { file =>
           fileListService.addFileItem(Paths.get(file.filename).getFileName.toString, file)
-          Ok("File uploaded")
+          Redirect(routes.FileListController.index())
         }
         .getOrElse {
           BadRequest("File upload failed")
