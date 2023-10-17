@@ -3,12 +3,17 @@
 # https://www.playframework.com/documentation/latest/ScalaRouting
 # ~~~~
 
+GET     /assets/*file               controllers.Assets.versioned(path="/public", file: Asset)
+
+GET     /                           controllers.FileListController.index()
+
 # show all given items - http://localhost:9000/files
 GET   /files             controllers.FileListController.getAllItemMetadata()
 
 # upload file with a name - http://localhost:9000/upload?itemName=Test
 # Note: Postmann add picture at Body with key file
-POST  /upload            controllers.FileUploadController.upload(itemName: String)
++ nocsrf
+POST  /upload            controllers.FileUploadController.upload()
 
 # download file with given id - http://localhost:9000/download/2
 GET   /download/:id      controllers.FileListController.downloadFile(id: Int)

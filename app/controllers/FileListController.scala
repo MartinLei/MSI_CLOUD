@@ -1,6 +1,6 @@
 package controllers
 import play.api.libs.json.Json
-import play.api.mvc.{Action, AnyContent, BaseController, ControllerComponents}
+import play.api.mvc.{Action, AnyContent, BaseController, ControllerComponents, Request}
 import service.FileListService
 
 import javax.inject.Inject
@@ -9,6 +9,10 @@ class FileListController @Inject() (
     val controllerComponents: ControllerComponents,
     val fileListService: FileListService
 ) extends BaseController:
+
+  def index() = Action { implicit request: Request[AnyContent] =>
+    Ok(views.html.index())
+  }
 
   def getAllItemMetadata(): Action[AnyContent] = Action.async { implicit request =>
     fileListService.getAllItemMetadata().map { item =>
