@@ -19,9 +19,11 @@ class FileListService @Inject() (val fileListRepository: FileListRepository):
 
   def search(name: String): Future[FileItemsDto] =
     fileListRepository.findAll
-      .map(items => items
-        .filter(item => item.itemName.contains(name)  || item.fileName.contains(name))
-        .map(item => FileItemDto.from(item)))
+      .map(items =>
+        items
+          .filter(item => item.itemName.contains(name) || item.fileName.contains(name))
+          .map(item => FileItemDto.from(item))
+      )
       .map(itemsDto => FileItemsDto(itemsDto))
 
   def addFileItem(itemName: String, file: FilePart[TemporaryFile]): Future[Int] =
