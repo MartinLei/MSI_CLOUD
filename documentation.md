@@ -10,6 +10,7 @@ CloudBox hat folgende Funktionalitäten:
 ## Application Architecture
 
 ### Betriebssystem
+Die Applikation soll später unter Linux Ubuntu erstellen.
 
 ### Verwendete Sprachen:
 Als Programmiersprachen werden in CloudBox überwiegend Scala3 und JavaScript verwendet. Außerdem HTML und CSS für das Frontend.
