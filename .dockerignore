@@ -1,0 +1,10 @@
+/.bsp
+/.github
+/.idea
+dev-tools/
+logs
+target
+test
+.scalafmt.conf
+documentation.md
+README.md
