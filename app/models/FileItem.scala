@@ -15,7 +15,7 @@ object FileItemDto:
     contentType = fileItem.contentType
   )
 
-case class FileItem(id: Int, itemName: String, fileName: String, contentType: String, data: Array[Byte])
+case class FileItem(id: Int, itemName: String, fileName: String, contentType: String, bucketItemId: String)
 
 object FileItem:
   implicit val format: Format[FileItem] = Json.format[FileItem]
@@ -29,6 +29,6 @@ class FileItemTable(tag: Tag) extends Table[FileItem](tag, "file_item"):
 
   def contentType = column[String]("content_type")
 
-  def data = column[Array[Byte]]("data")
+  def bucketItemId = column[String]("bucket_item_id")
 
-  override def * = (id, itemName, fileName, contentType, data) <> ((FileItem.apply _).tupled, FileItem.unapply)
+  override def * = (id, itemName, fileName, contentType, bucketItemId) <> ((FileItem.apply _).tupled, FileItem.unapply)

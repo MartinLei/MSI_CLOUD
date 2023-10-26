@@ -64,7 +64,7 @@ class FileListControllerTest extends PlaySpec with GuiceOneAppPerTest with Injec
       // verify
       status(result) mustBe OK
       contentType(result) mustBe Some(expectedFile.contentType)
-      contentAsBytes(result) mustEqual expectedFile.data
+      contentAsBytes(result) mustEqual expectedFile.bucketItemId
       headers(result) mustBe Map("Content-Disposition" -> s"attachment; filename=${expectedFile.fileName}")
     }
 

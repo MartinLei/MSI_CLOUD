@@ -44,18 +44,17 @@ class FileListService @Inject() (
     val contentType: String = file.contentType.getOrElse("text/plain")
     val filePath = file.ref.path
 
-    val fileNameHash = MessageDigest.getInstance("SHA-256")
+    val bucketItemId = MessageDigest.getInstance("SHA-256")
       .digest(System.nanoTime().toString.getBytes ++ fileName.getBytes("UTF-8"))
       .map("%02X".format(_))
       .mkString
 
-    googleBucketRepository.upload(filePath,fileNameHash)
+    googleBucketRepository.upload(filePath,bucketItemId)
 
     //googleBucketRepository.delete(hashFileName)
     //googleBucketRepository.deleteAll
-
-    val data: Array[Byte] = Files.readAllBytes(filePath)
-    val newItem = new FileItem(0, itemName, fileName, contentType, data)
+    
+    val newItem = new FileItem(0, itemName, fileName, contentType, bucketItemId)
     fileListRepository.save(newItem)
 
   def getFileItem(id: Int): Future[Option[FileItem]] =
