@@ -13,15 +13,16 @@ services:
       - ./init-scripts.sql:/docker-entrypoint-initdb.d/scripts.sql
 
   play:
-    image: testserver
-    links:
-      - "db"
+    image: cloudbox
     build:
       dockerfile: Dockerfile
     volumes:
-      - /dev-tools/credentials/google_bucket_oauth.json:/dev-tools/credentials/google_bucket_oauth.json # TODO
+      - /srv/credentials/cloudbox/google_bucket_oauth.json:/srv/credentials/google_bucket_oauth.json
+    user: "1000:1000"
     ports:
       - '9000:9000'
+    links:
+      - "db"
     depends_on:
       - db
 
