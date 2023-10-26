@@ -1,10 +1,9 @@
 /.bsp
 /.github
 /.idea
-dev-tools/
+dev-tools
 logs
 target
 test
-.scalafmt.conf
-documentation.md
-README.md
+*.conf
+*.md

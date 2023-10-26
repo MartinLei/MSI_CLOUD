@@ -18,6 +18,8 @@ services:
       - "db"
     build:
       dockerfile: Dockerfile
+    volumes:
+      - /dev-tools/credentials/google_bucket_oauth.json:/dev-tools/credentials/google_bucket_oauth.json # TODO
     ports:
       - '9000:9000'
     depends_on:
