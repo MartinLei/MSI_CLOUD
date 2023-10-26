@@ -8,6 +8,8 @@ import play.api.{Configuration, Logger}
 import java.io.FileInputStream
 import java.nio.file.{Path, Paths}
 
+import scala.jdk.CollectionConverters.*
+
 class GoogleBucketRepository @Inject() (configuration: Configuration):
   private val logger = Logger(getClass)
 
@@ -24,9 +26,10 @@ class GoogleBucketRepository @Inject() (configuration: Configuration):
     .build()
     .getService
 
+  private val prefixFileName: String = "file_"
   def upload(fileName: String, filePath: Path): Unit =
 
-    val blobId = BlobId.of(bucketName, fileName)
+    val blobId = BlobId.of(bucketName, prefixFileName + fileName)
     val blobInfo = BlobInfo.newBuilder(blobId).build()
 
     // Optional: set a generation-match precondition to avoid potential race
@@ -44,5 +47,20 @@ class GoogleBucketRepository @Inject() (configuration: Configuration):
         Storage.BlobWriteOption.doesNotExist()
 
     storage.createFrom(blobInfo, filePath, precondition)
-
     logger.info(s"Upload file $filePath to bucket as $fileName")
+    
+  def delete(fileName: String): Unit =
+
+    val blobId = BlobId.of(bucketName, prefixFileName + fileName)
+    storage.delete(blobId)
+    logger.info(s"Delete file $fileName")
+
+  def deleteAll: Unit =
+    val batch = storage.batch
+    val blobs = storage
+      .list(bucketName, Storage.BlobListOption.currentDirectory, Storage.BlobListOption.prefix(prefixFileName))
+
+    for blob <- blobs.iterateAll.asScala do batch.delete(blob.getBlobId)
+
+    batch.submit()
+    logger.info(s"Delete all files in bucket with prefix name $prefixFileName")
