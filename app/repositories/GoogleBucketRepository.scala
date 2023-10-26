@@ -3,12 +3,13 @@ package repositories
 import com.google.auth.oauth2.GoogleCredentials
 import com.google.cloud.storage.{BlobId, BlobInfo, Storage, StorageOptions}
 import com.google.inject.Inject
-import play.api.Configuration
+import play.api.{Configuration, Logger}
 
 import java.io.FileInputStream
 import java.nio.file.{Path, Paths}
 
 class GoogleBucketRepository @Inject() (configuration: Configuration):
+  private val logger = Logger(getClass)
 
   private val projectId: String = configuration.get[String]("google.bucket.projectId")
   private val bucketName: String = configuration.get[String]("google.bucket.bucketName")
@@ -44,4 +45,4 @@ class GoogleBucketRepository @Inject() (configuration: Configuration):
 
     storage.createFrom(blobInfo, filePath, precondition)
 
-    println(s"File $filePath uploaded to bucket $bucketName as $fileName")
+    logger.info(s"Upload file $filePath to bucket as $fileName")
