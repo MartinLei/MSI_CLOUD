@@ -16,8 +16,6 @@ class FileUploadController @Inject() (cc: ControllerComponents, fileListService:
         .file("file")
         .map { file =>
           fileListService.addFileItem(itemName, file)
-          // Ok("File uploaded")
-          // fileListService.addFileItem(Paths.get(file.filename).getFileName.toString, file)
           Redirect(routes.FileListController.index())
         }
         .getOrElse {

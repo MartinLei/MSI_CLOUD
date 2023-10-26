@@ -50,7 +50,6 @@ class FileListService @Inject() (
       .mkString
 
     googleBucketRepository.upload(filePath, bucketItemId)
-    // googleBucketRepository.deleteAll
 
     val newItem = new FileItem(0, itemName, fileName, contentType, bucketItemId)
     fileListRepository.save(newItem)

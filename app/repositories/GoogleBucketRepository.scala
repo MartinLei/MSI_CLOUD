@@ -59,7 +59,10 @@ class GoogleBucketRepository @Inject() (configuration: Configuration):
     storage.delete(blobId)
     logger.info(s"Delete file $fileName")
 
-  def deleteAll: Unit =
+  /**
+   * Only used for debugging purpose. For deleting all files in the bucket.
+   */
+  def deleteAll(): Unit =
     val batch = storage.batch
     val blobs = storage
       .list(bucketName, Storage.BlobListOption.currentDirectory, Storage.BlobListOption.prefix(prefixFileName))
