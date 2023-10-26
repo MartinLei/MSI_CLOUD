@@ -7,13 +7,16 @@ lazy val root = (project in file(".")).enablePlugins(PlayScala)
 
 scalaVersion := "3.3.1"
 
-// play dependencies
+// play
 libraryDependencies += guice
 libraryDependencies += "org.scalatestplus.play" %% "scalatestplus-play" % "6.0.0-RC2" % Test
 
-// db connection dependencies
+// postgresql connection db
 libraryDependencies ++= Seq(
   "com.typesafe.play" %% "play-slick" % "5.2.0-RC1",
   "com.typesafe.play" %% "play-slick-evolutions" % "5.2.0-RC1",
   "org.postgresql" % "postgresql" % "42.6.0"
 )
+
+// google bucket
+libraryDependencies += "com.google.cloud" % "google-cloud-storage" % "2.29.0"
