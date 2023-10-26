@@ -9,7 +9,7 @@ import org.scalatestplus.play.PlaySpec
 import org.scalatestplus.play.guice.GuiceOneAppPerTest
 import play.api.test.Helpers.await
 import play.api.test.Injecting
-import repositories.FileListRepository
+import repositories.{FileListRepository, GoogleBucketRepository}
 
 import scala.concurrent.Future
 import scala.concurrent.duration.*
@@ -18,20 +18,21 @@ class FileListServiceTest extends PlaySpec with GuiceOneAppPerTest with Injectin
   given defaultAwaitTimeout: Timeout = 2.seconds
 
   val fileListRepositoryMock: FileListRepository = mock[FileListRepository]
-  val sut = new FileListService(fileListRepositoryMock)
+  val googleBucketRepositoryMock: GoogleBucketRepository = mock[GoogleBucketRepository]
+  val sut = new FileListService(fileListRepositoryMock, googleBucketRepositoryMock)
 
   "getAllItemMetadata" should {
     "find all items" in {
       // setup
-      val file1 = FileItem(1, "itemName1", "fileName1", "contentType", Array(1))
-      val file2 = FileItem(2, "itemName2", "fileName2", "contentType", Array(1))
+      val file1 = FileItem(1, "itemName1", "fileName1", "contentType", "bucketItemId")
+      val file2 = FileItem(2, "itemName2", "fileName2", "contentType", "bucketItemId")
       when(fileListRepositoryMock.findAll).thenReturn(Future.successful(Seq(file1, file2)))
 
       // execute
       val result = await(sut.getAllItemMetadata)
 
       // verify
-      var expected = FileItemsDto(Seq(FileItemDto.from(file1),FileItemDto.from(file2)))
+      var expected = FileItemsDto(Seq(FileItemDto.from(file1), FileItemDto.from(file2)))
       result shouldBe expected
     }
   }
@@ -40,8 +41,8 @@ class FileListServiceTest extends PlaySpec with GuiceOneAppPerTest with Injectin
 
     "find file with same itemName" in {
       // setup
-      val file1 = FileItem(1, "itemName1", "fileName1", "contentType", Array(1) )
-      val file2 = FileItem(2, "itemName2", "fileName2", "contentType", Array(1))
+      val file1 = FileItem(1, "itemName1", "fileName1", "contentType", "bucketItemId")
+      val file2 = FileItem(2, "itemName2", "fileName2", "contentType", "bucketItemId")
       when(fileListRepositoryMock.findAll).thenReturn(Future.successful(Seq(file1, file2)))
 
       // execute
@@ -54,8 +55,8 @@ class FileListServiceTest extends PlaySpec with GuiceOneAppPerTest with Injectin
 
     "find file with same fileName" in {
       // setup
-      val file1 = FileItem(1, "itemName1", "fileName1", "contentType", Array(1))
-      val file2 = FileItem(2, "itemName2", "fileName2", "contentType", Array(1))
+      val file1 = FileItem(1, "itemName1", "fileName1", "contentType", "bucketItemId")
+      val file2 = FileItem(2, "itemName2", "fileName2", "contentType", "bucketItemId")
       when(fileListRepositoryMock.findAll).thenReturn(Future.successful(Seq(file1, file2)))
 
       // execute

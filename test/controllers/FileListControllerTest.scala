@@ -1,6 +1,7 @@
 package controllers
 
 import models.{FileItem, FileItemDto, FileItemsDto}
+import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import org.scalatestplus.mockito.MockitoSugar
 import org.scalatestplus.play.*
@@ -8,12 +9,14 @@ import org.scalatestplus.play.guice.GuiceOneAppPerTest
 import play.api.libs.json.Json
 import play.api.test.*
 import play.api.test.Helpers.*
+import repositories.GoogleBucketRepository
 import service.FileListService
 
 import scala.concurrent.Future
 class FileListControllerTest extends PlaySpec with GuiceOneAppPerTest with Injecting with MockitoSugar:
   val fileListServiceMock: FileListService = mock[FileListService]
-  val sut = new FileListController(stubControllerComponents(), fileListServiceMock)
+  val googleBucketRepositoryMock: GoogleBucketRepository = mock[GoogleBucketRepository]
+  val sut = new FileListController(stubControllerComponents(), fileListServiceMock, googleBucketRepositoryMock)
 
   "/files GET" should {
 
@@ -50,21 +53,21 @@ class FileListControllerTest extends PlaySpec with GuiceOneAppPerTest with Injec
     }
   }
 
-
   "/download/:id GET" should {
 
     "download given file" in {
       // setup
-      val expectedFile = FileItem(1, "itemName", "fileName", "text/plain", Array[Byte](1))
+      val expectedFile = FileItem(1, "itemName", "fileName", "text/plain", "bucketItemId")
       when(fileListServiceMock.getFileItem(1)).thenReturn(Future.successful(Some(expectedFile)))
-
+      val fileData = Array[Byte](1)
+      when(googleBucketRepositoryMock.download(any())).thenReturn(fileData)
       // execute
       val result = sut.downloadFile(1).apply(FakeRequest(GET, "/download/1"))
 
       // verify
       status(result) mustBe OK
       contentType(result) mustBe Some(expectedFile.contentType)
-      contentAsBytes(result) mustEqual expectedFile.bucketItemId
+      contentAsBytes(result) mustEqual fileData
       headers(result) mustBe Map("Content-Disposition" -> s"attachment; filename=${expectedFile.fileName}")
     }
 
