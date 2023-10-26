@@ -17,7 +17,7 @@ services:
     build:
       dockerfile: Dockerfile
     volumes:
-      - /srv/credentials/cloudbox/google_bucket_oauth.json:/srv/credentials/google_bucket_oauth.json
+      - /srv/credentials/google_bucket_oauth.json:/srv/credentials/google_bucket_oauth.json
     user: "1000:1000"
     ports:
       - '9000:9000'
