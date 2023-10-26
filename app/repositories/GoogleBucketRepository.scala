@@ -27,7 +27,7 @@ class GoogleBucketRepository @Inject() (configuration: Configuration):
     .getService
 
   private val prefixFileName: String = "file_"
-  def upload(fileName: String, filePath: Path): Unit =
+  def upload(filePath: Path, fileName: String ): Unit =
 
     val blobId = BlobId.of(bucketName, prefixFileName + fileName)
     val blobInfo = BlobInfo.newBuilder(blobId).build()

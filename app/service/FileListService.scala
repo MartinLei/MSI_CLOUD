@@ -1,16 +1,27 @@
 package service
 
 import models.{FileItem, FileItemDto, FileItemsDto}
+import play.api.Logger
 import play.api.libs.Files.TemporaryFile
 import play.api.mvc.MultipartFormData.*
-import repositories.FileListRepository
+import repositories.{FileListRepository, GoogleBucketRepository}
 
 import java.nio.file.{Files, Paths}
+import java.security.MessageDigest
+import java.time.LocalDate
 import javax.inject.Inject
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
+import scala.util.hashing.MurmurHash3
 
-class FileListService @Inject() (val fileListRepository: FileListRepository):
+class FileListService @Inject() (
+    val fileListRepository: FileListRepository,
+    val googleBucketRepository: GoogleBucketRepository
+):
+
+  private val logger = Logger(getClass)
+
+
 
   def getAllItemMetadata: Future[FileItemsDto] =
     fileListRepository.findAll
@@ -31,8 +42,19 @@ class FileListService @Inject() (val fileListRepository: FileListRepository):
     // otherwise someone can send a path like ../../home/foo/bar.txt to write to other files on the system
     val fileName: String = Paths.get(file.filename).getFileName.toString
     val contentType: String = file.contentType.getOrElse("text/plain")
-    val data: Array[Byte] = Files.readAllBytes(file.ref.path)
+    val filePath = file.ref.path
 
+    val fileNameHash = MessageDigest.getInstance("SHA-256")
+      .digest(System.nanoTime().toString.getBytes ++ fileName.getBytes("UTF-8"))
+      .map("%02X".format(_))
+      .mkString
+
+    googleBucketRepository.upload(filePath,fileNameHash)
+
+    //googleBucketRepository.delete(hashFileName)
+    //googleBucketRepository.deleteAll
+
+    val data: Array[Byte] = Files.readAllBytes(filePath)
     val newItem = new FileItem(0, itemName, fileName, contentType, data)
     fileListRepository.save(newItem)
 
