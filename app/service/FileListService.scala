@@ -11,7 +11,8 @@ import java.security.MessageDigest
 import java.time.LocalDate
 import javax.inject.Inject
 import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.Future
+import scala.concurrent.duration.Duration
+import scala.concurrent.{Await, Future}
 import scala.util.hashing.MurmurHash3
 
 class FileListService @Inject() (
@@ -49,8 +50,6 @@ class FileListService @Inject() (
       .mkString
 
     googleBucketRepository.upload(filePath, bucketItemId)
-
-    // googleBucketRepository.delete(hashFileName)
     // googleBucketRepository.deleteAll
 
     val newItem = new FileItem(0, itemName, fileName, contentType, bucketItemId)
@@ -60,4 +59,10 @@ class FileListService @Inject() (
     fileListRepository.findById(id)
 
   def removeFileItem(id: Int): Future[Int] =
-    fileListRepository.removeById(id)
+     Await.result( fileListRepository.findById(id), Duration.Inf) match
+      case Some(fileItem: FileItem) =>
+        googleBucketRepository.delete(fileItem.bucketItemId)
+        fileListRepository.removeById(id)
+      case None =>
+        Future.failed(new NoSuchElementException())
+
