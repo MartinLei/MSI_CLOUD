@@ -48,7 +48,12 @@ class GoogleBucketRepository @Inject() (configuration: Configuration):
 
     storage.createFrom(blobInfo, filePath, precondition)
     logger.info(s"Upload file $filePath to bucket as $fileName")
+
+  def download(bucketItemId: String): Array[Byte] =
+    val blobId = BlobId.of(bucketName, prefixFileName + bucketItemId)
+    storage.readAllBytes(blobId)
     
+
   def delete(fileName: String): Unit =
 
     val blobId = BlobId.of(bucketName, prefixFileName + fileName)
