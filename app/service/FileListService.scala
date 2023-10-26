@@ -21,8 +21,6 @@ class FileListService @Inject() (
 
   private val logger = Logger(getClass)
 
-
-
   def getAllItemMetadata: Future[FileItemsDto] =
     fileListRepository.findAll
       .map(items => items.map(item => FileItemDto.from(item)))
@@ -44,16 +42,17 @@ class FileListService @Inject() (
     val contentType: String = file.contentType.getOrElse("text/plain")
     val filePath = file.ref.path
 
-    val bucketItemId = MessageDigest.getInstance("SHA-256")
+    val bucketItemId = MessageDigest
+      .getInstance("SHA-256")
       .digest(System.nanoTime().toString.getBytes ++ fileName.getBytes("UTF-8"))
       .map("%02X".format(_))
       .mkString
 
-    googleBucketRepository.upload(filePath,bucketItemId)
+    googleBucketRepository.upload(filePath, bucketItemId)
 
-    //googleBucketRepository.delete(hashFileName)
-    //googleBucketRepository.deleteAll
-    
+    // googleBucketRepository.delete(hashFileName)
+    // googleBucketRepository.deleteAll
+
     val newItem = new FileItem(0, itemName, fileName, contentType, bucketItemId)
     fileListRepository.save(newItem)
 

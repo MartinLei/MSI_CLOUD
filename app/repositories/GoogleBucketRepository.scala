@@ -27,7 +27,7 @@ class GoogleBucketRepository @Inject() (configuration: Configuration):
     .getService
 
   private val prefixFileName: String = "file_"
-  def upload(filePath: Path, fileName: String ): Unit =
+  def upload(filePath: Path, fileName: String): Unit =
 
     val blobId = BlobId.of(bucketName, prefixFileName + fileName)
     val blobInfo = BlobInfo.newBuilder(blobId).build()
@@ -52,7 +52,6 @@ class GoogleBucketRepository @Inject() (configuration: Configuration):
   def download(bucketItemId: String): Array[Byte] =
     val blobId = BlobId.of(bucketName, prefixFileName + bucketItemId)
     storage.readAllBytes(blobId)
-    
 
   def delete(fileName: String): Unit =
 

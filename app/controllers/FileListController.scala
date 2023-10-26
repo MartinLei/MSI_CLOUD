@@ -9,7 +9,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 class FileListController @Inject() (
     val controllerComponents: ControllerComponents,
     val fileListService: FileListService,
-    val googleBucketRepository : GoogleBucketRepository
+    val googleBucketRepository: GoogleBucketRepository
 ) extends BaseController:
 
   def index() = Action { implicit request: Request[AnyContent] =>
