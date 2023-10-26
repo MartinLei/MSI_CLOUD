@@ -59,9 +59,8 @@ class GoogleBucketRepository @Inject() (configuration: Configuration):
     storage.delete(blobId)
     logger.info(s"Delete file $fileName")
 
-  /**
-   * Only used for debugging purpose. For deleting all files in the bucket.
-   */
+  /** Only used for debugging purpose. For deleting all files in the bucket.
+    */
   def deleteAll(): Unit =
     val batch = storage.batch
     val blobs = storage

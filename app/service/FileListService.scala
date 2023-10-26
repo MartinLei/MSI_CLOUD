@@ -58,10 +58,9 @@ class FileListService @Inject() (
     fileListRepository.findById(id)
 
   def removeFileItem(id: Int): Future[Int] =
-     Await.result( fileListRepository.findById(id), Duration.Inf) match
+    Await.result(fileListRepository.findById(id), Duration.Inf) match
       case Some(fileItem: FileItem) =>
         googleBucketRepository.delete(fileItem.bucketItemId)
         fileListRepository.removeById(id)
       case None =>
         Future.failed(new NoSuchElementException())
-
