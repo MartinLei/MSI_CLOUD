@@ -3,9 +3,10 @@ services:
   db:
     image: postgres:16-alpine3.17
     environment:
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=CHANGEINPRODUCTION
-      - POSTGRES_DB=postgres
+      - POSTGRES_DB_HOST=${POSTGRES_DB_HOST}
+      - POSTGRES_DB_NAME=${POSTGRES_DB_NAME}
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
     ports:
       - '5432:5432'
     volumes:
@@ -14,6 +15,14 @@ services:
 
   play:
     image: cloudbox
+    environment:
+      - POSTGRES_DB_HOST=${POSTGRES_DB_HOST}
+      - POSTGRES_DB_NAME=${POSTGRES_DB_NAME}
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - GOOGLE_PROJECT_ID=${GOOGLE_PROJECT_ID}
+      - GOOGLE_BUCKET_NAME=${GOOGLE_BUCKET_NAME}
+      - GOOGLE_CREDENTIALS_FILE_PATH=${GOOGLE_CREDENTIALS_FILE_PATH}
     build:
       dockerfile: Dockerfile
     volumes:
