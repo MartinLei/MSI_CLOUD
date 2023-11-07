@@ -1,17 +1,5 @@
 version: '3.8'
 services:
-  db:
-    image: postgres:16-alpine3.17
-    environment:
-      - POSTGRES_DB_HOST=${POSTGRES_DB_HOST}
-      - POSTGRES_DB_NAME=${POSTGRES_DB_NAME}
-      - POSTGRES_USER=${POSTGRES_USER}
-      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
-    ports:
-      - '5432:5432'
-    volumes:
-      - db:/var/lib/postgresql11/data
-      - ./init-scripts.sql:/docker-entrypoint-initdb.d/scripts.sql
 
   play:
     image: cloudbox
@@ -30,11 +18,3 @@ services:
     user: "1000:1000"
     ports:
       - '9000:9000'
-    links:
-      - "db"
-    depends_on:
-      - db
-
-volumes:
-  db:
-    driver: local
