@@ -1,7 +1,4 @@
-gcloud compute instances create backend-1 --zone=europe-west3-c --machine-type=e2-medium --source-machine-image=backend --project=spring-monolith-403010 --service-account=702381394218-compute@developer.gserviceaccount.com
-gcloud compute instances create backend-2 --zone=europe-west3-c --machine-type=e2-medium --source-machine-image=backend --project=spring-monolith-403010 --service-account=702381394218-compute@developer.gserviceaccount.com
-
-#gcloud compute instances create database-1 --zone=europe-west3-c --machine-type=e2-medium --source-machine-image=database --project=spring-monolith-403010 --service-account=702381394218-compute@developer.gserviceaccount.com
+gcloud compute instances create backend-1 backend-2 --zone=europe-west3-c --machine-type=e2-medium --source-machine-image=backend --project=spring-monolith-403010 --service-account=702381394218-compute@developer.gserviceaccount.com
 
 gcloud compute instance-groups unmanaged create instance-group-auto --project=spring-monolith-403010 --zone=europe-west3-c
 gcloud compute instance-groups unmanaged set-named-ports instance-group-auto --project=spring-monolith-403010 --zone=europe-west3-c --named-ports=backendport:9000
@@ -20,3 +17,7 @@ gcloud compute target-http-proxies create autoproxy --url-map=automap
 
 gcloud compute addresses create lb-ipv4-1 --ip-version=IPV4 --network-tier=PREMIUM --global
 gcloud compute forwarding-rules create http-content-auto --load-balancing-scheme=EXTERNAL --address=lb-ipv4-1 --global --target-http-proxy=autoproxy --ports=80
+
+gcloud compute addresses describe lb-ipv4-1 --global
+
+echo "Done ----- Check the printed address"
