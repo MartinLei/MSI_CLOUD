@@ -24,7 +24,7 @@ class FileListService @Inject() (
   private val logger = Logger(getClass)
 
   def getAllItemMetadata: Future[FileItemsDto] =
-    fileListRepository.findAll
+    googleFireStoreRepository.findAll
       .map(items => items.map(item => FileItemDto.from(item)))
       .map(itemsDto => FileItemsDto(itemsDto))
 
@@ -50,14 +50,10 @@ class FileListService @Inject() (
       .map("%02X".format(_))
       .mkString
 
-    //googleBucketRepository.upload(filePath, bucketItemId)
+    googleBucketRepository.upload(filePath, bucketItemId)
 
     val newItem = new FileItem(0, itemName, fileName, contentType, bucketItemId)
-
-
     googleFireStoreRepository.save(newItem)
-      .map(a=> 1) // TODO
-    //fileListRepository.save(newItem)
 
   def getFileItem(id: Int): Future[Option[FileItem]] =
     fileListRepository.findById(id)

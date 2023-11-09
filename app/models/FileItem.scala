@@ -17,13 +17,17 @@ object FileItemDto:
     contentType = fileItem.contentType
   )
 
+/**
+ * Using @BeanProperty for creating java getter and setter.
+ */
 case class FileItem(
-    @BeanProperty id: Int,
-    @BeanProperty itemName: String,
-    @BeanProperty fileName: String,
-    @BeanProperty contentType: String,
-    @BeanProperty bucketItemId: String
-)
+    @BeanProperty var id: Int,
+    @BeanProperty var itemName: String,
+    @BeanProperty var fileName: String,
+    @BeanProperty var contentType: String,
+    @BeanProperty var bucketItemId: String
+):
+  def this() = this(0, "", "", "", "")
 
 object FileItem:
   implicit val format: Format[FileItem] = Json.format[FileItem]

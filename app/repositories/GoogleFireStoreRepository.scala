@@ -11,6 +11,7 @@ import utils.asScala
 import java.io.FileInputStream
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
+import scala.jdk.CollectionConverters.*
 import scala.language.postfixOps
 
 class GoogleFireStoreRepository @Inject() (configuration: Configuration)(using ec: ExecutionContext)
@@ -24,11 +25,19 @@ class GoogleFireStoreRepository @Inject() (configuration: Configuration)(using e
 
   private val db = FirestoreOptions
     .newBuilder()
-    .setProjectId(projectId + "kk")
+    .setProjectId(projectId)
     .setCredentials(credentials)
     .build
     .getService
 
-  def save(fileItem: FileItem): Future[DocumentReference] =
-    val apiFuture: ApiFuture[DocumentReference] = db.collection(collectionId).add(fileItem)
-    apiFuture.asScala
+  def save(fileItem: FileItem): Future[Int] =
+    db.collection(collectionId).add(fileItem).asScala
+      .map(documentReference=> documentReference.getId.toInt)
+    
+
+  def findAll: Future[Seq[FileItem]] =
+     db.collection(collectionId).get().asScala
+      .map(querySnapshot => querySnapshot.getDocuments.asScala.toSeq)
+      .map(seqQuerySnapshot => seqQuerySnapshot
+        .map(queryDocumentSnapshot => queryDocumentSnapshot.toObject(classOf[FileItem]))
+      )
