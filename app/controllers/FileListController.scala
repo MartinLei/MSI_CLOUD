@@ -28,7 +28,7 @@ class FileListController @Inject() (
     }
   }
 
-  def downloadFile(id: Int): Action[AnyContent] = Action.async { request =>
+  def downloadFile(id: String): Action[AnyContent] = Action.async { request =>
     fileListService.getFileItem(id).map {
       case Some(fileItem) =>
         Ok(googleBucketRepository.download(fileItem.bucketItemId))

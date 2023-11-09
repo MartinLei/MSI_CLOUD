@@ -22,9 +22,9 @@ class FileListRepository @Inject() (protected val dbConfigProvider: DatabaseConf
     val insertQuery = fileItemTable += fileItem
     db.run(insertQuery)
 
-  def findById(id: Int): Future[Option[FileItem]] =
-    db.run(fileItemTable.filter(_.id === id).result.headOption)
+  def findById(id: Int): Future[Option[FileItem]] = ???
+    //db.run(fileItemTable.filter(_.id === id).result.headOption)
 
-  def removeById(id: Int): Future[Int] =
-    val removeQuery = fileItemTable.filter(_.id === id).delete
-    db.run(removeQuery)
+  def removeById(id: Int): Future[Int] = ???
+    //val removeQuery = fileItemTable.filter(_.id === id).delete
+    //db.run(removeQuery)

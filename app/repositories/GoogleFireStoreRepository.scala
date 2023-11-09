@@ -33,11 +33,22 @@ class GoogleFireStoreRepository @Inject() (configuration: Configuration)(using e
   def save(fileItem: FileItem): Future[Int] =
     db.collection(collectionId).add(fileItem).asScala
       .map(documentReference=> documentReference.getId.toInt)
-    
+
 
   def findAll: Future[Seq[FileItem]] =
      db.collection(collectionId).get().asScala
       .map(querySnapshot => querySnapshot.getDocuments.asScala.toSeq)
       .map(seqQuerySnapshot => seqQuerySnapshot
-        .map(queryDocumentSnapshot => queryDocumentSnapshot.toObject(classOf[FileItem]))
+        .map(toFileItem)
       )
+
+  def findById(documentId: String): Future[Option[FileItem]] =
+    db.collection(collectionId).document(documentId).get().asScala
+      .map(queryDocumentSnapshot => Some(queryDocumentSnapshot.toObject(classOf[FileItem])))
+
+
+  def toFileItem: QueryDocumentSnapshot => FileItem =
+    queryDocumentSnapshot => {
+      val fileItem : FileItem = queryDocumentSnapshot.toObject(classOf[FileItem])
+      FileItem.apply(queryDocumentSnapshot.getId, fileItem)
+    }

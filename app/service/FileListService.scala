@@ -1,5 +1,6 @@
 package service
 
+import com.typesafe.scalalogging.LazyLogging
 import models.{FileItem, FileItemDto, FileItemsDto}
 import play.api.Logger
 import play.api.libs.Files.TemporaryFile
@@ -16,12 +17,10 @@ import scala.concurrent.{Await, Future}
 import scala.util.hashing.MurmurHash3
 
 class FileListService @Inject() (
-     fileListRepository: FileListRepository,
-     googleBucketRepository: GoogleBucketRepository,
-     googleFireStoreRepository: GoogleFireStoreRepository
-):
-
-  private val logger = Logger(getClass)
+    fileListRepository: FileListRepository,
+    googleBucketRepository: GoogleBucketRepository,
+    googleFireStoreRepository: GoogleFireStoreRepository
+) extends LazyLogging:
 
   def getAllItemMetadata: Future[FileItemsDto] =
     googleFireStoreRepository.findAll
@@ -52,11 +51,11 @@ class FileListService @Inject() (
 
     googleBucketRepository.upload(filePath, bucketItemId)
 
-    val newItem = new FileItem(0, itemName, fileName, contentType, bucketItemId)
+    val newItem = new FileItem("-", itemName, fileName, contentType, bucketItemId)
     googleFireStoreRepository.save(newItem)
 
-  def getFileItem(id: Int): Future[Option[FileItem]] =
-    fileListRepository.findById(id)
+  def getFileItem(documentId: String): Future[Option[FileItem]] =
+    googleFireStoreRepository.findById(documentId)
 
   def removeFileItem(id: Int): Future[Int] =
     Await.result(fileListRepository.findById(id), Duration.Inf) match
