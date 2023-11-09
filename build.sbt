@@ -23,3 +23,7 @@ libraryDependencies += "com.google.cloud" % "google-cloud-storage" % "2.29.0"
 
 // google firestore nosql
 libraryDependencies += "com.google.firebase" % "firebase-admin" % "9.2.0"
+
+
+libraryDependencies += "ch.qos.logback" % "logback-classic" % "1.2.10"
+libraryDependencies += "com.typesafe.scala-logging" %% "scala-logging" % "3.9.5"
