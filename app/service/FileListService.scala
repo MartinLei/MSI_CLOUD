@@ -4,7 +4,7 @@ import models.{FileItem, FileItemDto, FileItemsDto}
 import play.api.Logger
 import play.api.libs.Files.TemporaryFile
 import play.api.mvc.MultipartFormData.*
-import repositories.{FileListRepository, GoogleBucketRepository}
+import repositories.{FileListRepository, GoogleBucketRepository, GoogleFireStoreRepository}
 
 import java.nio.file.{Files, Paths}
 import java.security.MessageDigest
@@ -16,8 +16,9 @@ import scala.concurrent.{Await, Future}
 import scala.util.hashing.MurmurHash3
 
 class FileListService @Inject() (
-    val fileListRepository: FileListRepository,
-    val googleBucketRepository: GoogleBucketRepository
+     fileListRepository: FileListRepository,
+     googleBucketRepository: GoogleBucketRepository,
+     googleFireStoreRepository: GoogleFireStoreRepository
 ):
 
   private val logger = Logger(getClass)
@@ -49,10 +50,14 @@ class FileListService @Inject() (
       .map("%02X".format(_))
       .mkString
 
-    googleBucketRepository.upload(filePath, bucketItemId)
+    //googleBucketRepository.upload(filePath, bucketItemId)
 
     val newItem = new FileItem(0, itemName, fileName, contentType, bucketItemId)
-    fileListRepository.save(newItem)
+
+
+    googleFireStoreRepository.save(newItem)
+      .map(a=> 1) // TODO
+    //fileListRepository.save(newItem)
 
   def getFileItem(id: Int): Future[Option[FileItem]] =
     fileListRepository.findById(id)

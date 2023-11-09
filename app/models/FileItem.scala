@@ -3,6 +3,8 @@ package models
 import play.api.libs.json.{Format, Json}
 import slick.jdbc.PostgresProfile.api.*
 
+import scala.beans.BeanProperty
+
 case class FileItemDto(id: Int, itemName: String, fileName: String, contentType: String)
 
 object FileItemDto:
@@ -15,7 +17,13 @@ object FileItemDto:
     contentType = fileItem.contentType
   )
 
-case class FileItem(id: Int, itemName: String, fileName: String, contentType: String, bucketItemId: String)
+case class FileItem(
+    @BeanProperty id: Int,
+    @BeanProperty itemName: String,
+    @BeanProperty fileName: String,
+    @BeanProperty contentType: String,
+    @BeanProperty bucketItemId: String
+)
 
 object FileItem:
   implicit val format: Format[FileItem] = Json.format[FileItem]
