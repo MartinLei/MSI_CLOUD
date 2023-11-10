@@ -23,18 +23,16 @@ class FileListService @Inject() (
 ) extends LazyLogging:
 
   def getAllItemMetadata: Future[FileItemsDto] =
-    googleFireStoreRepository.findAll
-      .map(items => items.map(item => FileItemDto.from(item)))
-      .map(itemsDto => FileItemsDto(itemsDto))
+    for
+      items <- googleFireStoreRepository.findAll
+      itemsDto = items.map(item => FileItemDto.from(item))
+    yield FileItemsDto(itemsDto)
 
   def search(name: String): Future[FileItemsDto] =
-    fileListRepository.findAll
-      .map(items =>
-        items
-          .filter(item => item.itemName.contains(name) || item.fileName.contains(name))
-          .map(item => FileItemDto.from(item))
-      )
-      .map(itemsDto => FileItemsDto(itemsDto))
+    for
+      items <- googleFireStoreRepository.search(name)
+      itemsDto = items.map(item => FileItemDto.from(item))
+    yield FileItemsDto(itemsDto)
 
   def addFileItem(itemName: String, file: FilePart[TemporaryFile]): Future[Int] =
     // only get the last part of the filename
