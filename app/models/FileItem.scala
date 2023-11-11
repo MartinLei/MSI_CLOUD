@@ -32,5 +32,3 @@ object FileItem:
 
   def apply(id: String, fileItem: FileItem): FileItem =
     FileItem(id, fileItem.itemName, fileItem.fileName, fileItem.contentType, fileItem.bucketItemId)
-
-
