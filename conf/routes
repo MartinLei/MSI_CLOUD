@@ -22,4 +22,4 @@ POST   /upload                      controllers.FileUploadController.upload(item
 GET    /download/:id                controllers.FileListController.downloadFile(id: String)
 
 # delete file with given id - http://localhost:9000/delete/2
-POST   /delete/:id                  controllers.FileDeleteController.delete(id: Int)
+POST   /delete/:id                  controllers.FileListController.delete(id: String)

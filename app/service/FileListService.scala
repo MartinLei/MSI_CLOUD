@@ -55,10 +55,14 @@ class FileListService @Inject() (
   def getFileItem(documentId: String): Future[Option[FileItem]] =
     googleFireStoreRepository.findById(documentId)
 
-  def removeFileItem(id: Int): Future[Int] =
-    Await.result(fileListRepository.findById(id), Duration.Inf) match
-      case Some(fileItem: FileItem) =>
-        googleBucketRepository.delete(fileItem.bucketItemId)
-        fileListRepository.removeById(id)
-      case None =>
-        Future.failed(new NoSuchElementException())
+  def deleteFileItem(documentId: String): Future[Option[String]] =
+    for
+      maybeFileItem <- googleFireStoreRepository.findById(documentId)
+      result <- maybeFileItem match
+        case None => Future.failed(new IllegalArgumentException(s"No fileItem with $documentId found"))
+        case Some(fileItem) =>
+          googleBucketRepository.delete(fileItem.bucketItemId)
+          googleFireStoreRepository
+            .delete(documentId)
+            .map(_ => Some(fileItem.id))
+    yield result

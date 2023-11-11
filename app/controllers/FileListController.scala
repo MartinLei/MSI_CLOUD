@@ -6,6 +6,8 @@ import service.FileListService
 
 import javax.inject.Inject
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.util.Failure
+import scala.util.Success
 class FileListController @Inject() (
     val controllerComponents: ControllerComponents,
     val fileListService: FileListService,
@@ -36,5 +38,12 @@ class FileListController @Inject() (
           .withHeaders("Content-Disposition" -> s"attachment; filename=${fileItem.fileName}")
       case None =>
         NotFound("File not found")
+    }
+  }
+
+  def delete(id: String): Action[AnyContent] = Action.async { request =>
+    fileListService.deleteFileItem(id).map {
+      case Some(value) => Ok(s"Item $value deleted")
+      case None        => NotFound(s"Could not find $id")
     }
   }

@@ -51,11 +51,9 @@ class GoogleBucketRepository @Inject() (configuration: Configuration) extends La
     val blobId = BlobId.of(bucketName, prefixFileName + bucketItemId)
     storage.readAllBytes(blobId)
 
-  def delete(fileName: String): Unit =
-
+  def delete(fileName: String): Boolean =
     val blobId = BlobId.of(bucketName, prefixFileName + fileName)
     storage.delete(blobId)
-    logger.info(s"Delete file $fileName")
 
   /** Only used for debugging purpose. For deleting all files in the bucket.
     */

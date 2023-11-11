@@ -58,6 +58,13 @@ class GoogleFireStoreRepository @Inject() (configuration: Configuration)(using e
       .map(querySnapshot => querySnapshot.getDocuments.asScala.toSeq)
       .map(seqQuerySnapshot => seqQuerySnapshot.map(toFileItem))
 
+  def delete(documentId: String): Future[String] =
+    db.collection(collectionId)
+      .document(documentId)
+      .delete()
+      .asScala
+      .map(w => documentId)
+
   def toFileItem: QueryDocumentSnapshot => FileItem =
     queryDocumentSnapshot =>
       val fileItem: FileItem = queryDocumentSnapshot.toObject(classOf[FileItem])
