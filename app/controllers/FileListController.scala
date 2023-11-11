@@ -15,7 +15,7 @@ class FileListController @Inject() (
     val googleBucketRepository: GoogleBucketRepository
 ) extends BaseController:
 
-  def index() = Action { implicit request: Request[AnyContent] =>
+  def index(): Action[AnyContent] = Action { implicit request: Request[AnyContent] =>
     Ok(views.html.index())
   }
 
