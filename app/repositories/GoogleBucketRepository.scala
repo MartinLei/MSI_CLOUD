@@ -61,8 +61,13 @@ class GoogleBucketRepository @Inject() (configuration: Configuration) extends La
     val batch = storage.batch
     val blobs = storage
       .list(bucketName, Storage.BlobListOption.currentDirectory, Storage.BlobListOption.prefix(prefixFileName))
-
-    for blob <- blobs.iterateAll.asScala do batch.delete(blob.getBlobId)
-
+      .iterateAll.asScala
+    
+    if(blobs.isEmpty){
+      logger.info(s"Bucket is empty")
+      return
+    }
+    
+    for blob <- blobs do batch.delete(blob.getBlobId)
     batch.submit()
     logger.info(s"Delete all files in bucket with prefix name $prefixFileName")

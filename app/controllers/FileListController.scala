@@ -7,6 +7,7 @@ import service.FileListService
 
 import javax.inject.Inject
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
 import scala.util.Failure
 import scala.util.Success
 class FileListController @Inject() (
@@ -47,6 +48,12 @@ class FileListController @Inject() (
       case Some(value) => Ok(s"Item $value deleted")
       case None        => NotFound(s"Could not find $id")
     }
+  }
+
+  def deleteAll(): Action[AnyContent] = Action.async { request =>
+    fileListService.deleteAll()
+
+    Future.successful(Ok("Deleted all files"))
   }
 
   def upload(itemName: String): Action[MultipartFormData[Files.TemporaryFile]] = Action(parse.multipartFormData) {

@@ -55,9 +55,13 @@ class FileListService @Inject() (
       maybeFileItem <- googleFireStoreRepository.findById(documentId)
       result <- maybeFileItem match
         case None => Future.failed(new IllegalArgumentException(s"No fileItem with $documentId found"))
-        case Some(fileItem) =>
-          googleBucketRepository.delete(fileItem.bucketItemId)
+        case Some(_) =>
+          googleBucketRepository.delete(documentId)
           googleFireStoreRepository
             .delete(documentId)
-            .map(_ => Some(fileItem.id))
+            .map(_ => Some(documentId))
     yield result
+
+  def deleteAll(): Unit =
+    googleBucketRepository.deleteAll()
+    googleFireStoreRepository.deleteAll()

@@ -23,3 +23,6 @@ GET    /download/:id                controllers.FileListController.downloadFile(
 
 # delete file with given id - http://localhost:9000/delete/2
 POST   /delete/:id                  controllers.FileListController.delete(id: String)
+
+# delete all saved fileItem with given id - http://localhost:9000/deleteAll
+GET   /deleteAll                  controllers.FileListController.deleteAll()

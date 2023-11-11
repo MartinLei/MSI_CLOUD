@@ -13,6 +13,7 @@ import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 import scala.jdk.CollectionConverters.*
 import scala.language.postfixOps
+import scala.util.{Failure, Success}
 
 class GoogleFireStoreRepository @Inject() (configuration: Configuration)(using ec: ExecutionContext)
     extends LazyLogging:
@@ -64,6 +65,21 @@ class GoogleFireStoreRepository @Inject() (configuration: Configuration)(using e
       .delete()
       .asScala
       .map(w => documentId)
+
+  /** Only used for debugging purpose. For deleting all files in the bucket.
+    */
+  def deleteAll(): Unit =
+    val batch = db.batch()
+    val documents = db.collection(collectionId).get().get().asScala
+    documents
+      .foreach(document => batch.delete(document.getReference))
+
+    if documents.isEmpty then
+      logger.info(s"Firestore is empty")
+      return
+
+    batch.commit()
+    logger.info(s"Delete all ${documents.size} entries in fileStore of collection $collectionId")
 
   def toFileItem: QueryDocumentSnapshot => FileItem =
     queryDocumentSnapshot =>
