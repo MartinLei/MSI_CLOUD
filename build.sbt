@@ -11,12 +11,9 @@ scalaVersion := "3.3.1"
 libraryDependencies += guice
 libraryDependencies += "org.scalatestplus.play" %% "scalatestplus-play" % "6.0.0-RC2" % Test
 
-// postgresql connection db
-libraryDependencies ++= Seq(
-  "com.typesafe.play" %% "play-slick" % "5.2.0-RC1",
-  "com.typesafe.play" %% "play-slick-evolutions" % "5.2.0-RC1",
-  "org.postgresql" % "postgresql" % "42.6.0"
-)
+// logging
+libraryDependencies += "ch.qos.logback" % "logback-classic" % "1.2.10"
+libraryDependencies += "com.typesafe.scala-logging" %% "scala-logging" % "3.9.5"
 
 // google bucket
 libraryDependencies += "com.google.cloud" % "google-cloud-storage" % "2.29.0"
@@ -25,5 +22,3 @@ libraryDependencies += "com.google.cloud" % "google-cloud-storage" % "2.29.0"
 libraryDependencies += "com.google.firebase" % "firebase-admin" % "9.2.0"
 
 
-libraryDependencies += "ch.qos.logback" % "logback-classic" % "1.2.10"
-libraryDependencies += "com.typesafe.scala-logging" %% "scala-logging" % "3.9.5"

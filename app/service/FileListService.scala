@@ -2,22 +2,17 @@ package service
 
 import com.typesafe.scalalogging.LazyLogging
 import models.{FileItem, FileItemDto, FileItemsDto}
-import play.api.Logger
 import play.api.libs.Files.TemporaryFile
 import play.api.mvc.MultipartFormData.*
-import repositories.{FileListRepository, GoogleBucketRepository, GoogleFireStoreRepository}
+import repositories.{GoogleBucketRepository, GoogleFireStoreRepository}
 
-import java.nio.file.{Files, Paths}
+import java.nio.file.Paths
 import java.security.MessageDigest
-import java.time.LocalDate
 import javax.inject.Inject
 import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.duration.Duration
-import scala.concurrent.{Await, Future}
-import scala.util.hashing.MurmurHash3
+import scala.concurrent.Future
 
 class FileListService @Inject() (
-    fileListRepository: FileListRepository,
     googleBucketRepository: GoogleBucketRepository,
     googleFireStoreRepository: GoogleFireStoreRepository
 ) extends LazyLogging:

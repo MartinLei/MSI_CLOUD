@@ -1,7 +1,6 @@
 package models
 
 import play.api.libs.json.{Format, Json}
-import slick.jdbc.PostgresProfile.api.*
 
 import scala.beans.BeanProperty
 
@@ -34,15 +33,4 @@ object FileItem:
   def apply(id: String, fileItem: FileItem): FileItem =
     FileItem(id, fileItem.itemName, fileItem.fileName, fileItem.contentType, fileItem.bucketItemId)
 
-class FileItemTable(tag: Tag) extends Table[FileItem](tag, "file_item"):
-  def id = column[String]("id", O.PrimaryKey, O.AutoInc)
 
-  def itemName = column[String]("item_name")
-
-  def fileName = column[String]("file_name")
-
-  def contentType = column[String]("content_type")
-
-  def bucketItemId = column[String]("bucket_item_id")
-
-  override def * = ???
