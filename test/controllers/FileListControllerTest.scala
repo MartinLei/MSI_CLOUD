@@ -6,7 +6,10 @@ import org.mockito.Mockito.when
 import org.scalatestplus.mockito.MockitoSugar
 import org.scalatestplus.play.*
 import org.scalatestplus.play.guice.GuiceOneAppPerTest
+import play.api.libs.Files.{SingletonTemporaryFileCreator, TemporaryFile}
 import play.api.libs.json.Json
+import play.api.mvc.MultipartFormData
+import play.api.mvc.MultipartFormData.FilePart
 import play.api.test.*
 import play.api.test.Helpers.*
 import repositories.GoogleBucketRepository
@@ -80,5 +83,32 @@ class FileListControllerTest extends PlaySpec with GuiceOneAppPerTest with Injec
 
       // verify
       status(result) mustBe NOT_FOUND
+    }
+  }
+
+  /** TODO not working!
+    */
+  "/upload POST" should {
+
+    "upload file" in {
+
+      // setup
+      val expectedItemName = "itemName"
+      val expectedFile = SingletonTemporaryFileCreator.create("tmp", ".txt")
+      val files = Seq[FilePart[TemporaryFile]](FilePart("file", "UploadServiceSpec.scala", None, expectedFile))
+
+      val file = FilePart("upload", "hello.txt", Option("text/plain"), expectedFile)
+      val formData = MultipartFormData(dataParts = Map("" -> Seq("dummydata")), files = Seq(file), badParts = Seq())
+
+      // execute
+      val result = sut
+        .upload(expectedItemName)
+        .apply(
+          FakeRequest(POST, "/upload")
+            .withMultipartFormDataBody(formData)
+        )
+
+      // verify
+      // status(result) mustBe OK
     }
   }
