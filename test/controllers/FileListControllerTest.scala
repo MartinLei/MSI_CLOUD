@@ -22,7 +22,7 @@ class FileListControllerTest extends PlaySpec with GuiceOneAppPerTest with Injec
 
     "get all given files" in {
       // setup
-      val expectedFiles = FileItemsDto(List(FileItemDto(1, "itemName", "fileName", "contentType")))
+      val expectedFiles = FileItemsDto(List(FileItemDto("1", "itemName", "fileName", "contentType")))
       when(fileListServiceMock.getAllItemMetadata).thenReturn(Future.successful(expectedFiles))
 
       // execute
@@ -39,7 +39,7 @@ class FileListControllerTest extends PlaySpec with GuiceOneAppPerTest with Injec
 
     "get all given files with given name" in {
       // setup
-      val expectedFiles = FileItemsDto(List(FileItemDto(1, "itemName", "fileName", "contentType")))
+      val expectedFiles = FileItemsDto(List(FileItemDto("1", "itemName", "fileName", "contentType")))
       when(fileListServiceMock.search("itemName")).thenReturn(Future.successful(expectedFiles))
 
       // execute
@@ -57,12 +57,12 @@ class FileListControllerTest extends PlaySpec with GuiceOneAppPerTest with Injec
 
     "download given file" in {
       // setup
-      val expectedFile = FileItem(1, "itemName", "fileName", "text/plain", "bucketItemId")
-      when(fileListServiceMock.getFileItem(1)).thenReturn(Future.successful(Some(expectedFile)))
+      val expectedFile = FileItem("1", "itemName", "fileName", "text/plain", "bucketItemId")
+      when(fileListServiceMock.getFileItem("1")).thenReturn(Future.successful(Some(expectedFile)))
       val fileData = Array[Byte](1)
       when(googleBucketRepositoryMock.download(any())).thenReturn(fileData)
       // execute
-      val result = sut.downloadFile(1).apply(FakeRequest(GET, "/download/1"))
+      val result = sut.downloadFile("1").apply(FakeRequest(GET, "/download/1"))
 
       // verify
       status(result) mustBe OK
@@ -73,10 +73,10 @@ class FileListControllerTest extends PlaySpec with GuiceOneAppPerTest with Injec
 
     "404 if id is not found" in {
       // setup
-      when(fileListServiceMock.getFileItem(1)).thenReturn(Future.successful(None))
+      when(fileListServiceMock.getFileItem("1")).thenReturn(Future.successful(None))
 
       // execute
-      val result = sut.downloadFile(1).apply(FakeRequest(GET, "/download/1"))
+      val result = sut.downloadFile("1").apply(FakeRequest(GET, "/download/1"))
 
       // verify
       status(result) mustBe NOT_FOUND
