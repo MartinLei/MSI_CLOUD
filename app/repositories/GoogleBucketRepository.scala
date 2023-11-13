@@ -5,17 +5,23 @@ import com.google.cloud.storage.{BlobId, BlobInfo, Storage, StorageOptions}
 import com.google.inject.Inject
 import com.typesafe.scalalogging.LazyLogging
 import play.api.Configuration
+import play.api.libs.json._
 
-import java.io.FileInputStream
+
+import java.io.{ByteArrayInputStream, FileInputStream}
 import java.nio.file.Path
 import scala.jdk.CollectionConverters.*
 
 class GoogleBucketRepository @Inject() (configuration: Configuration) extends LazyLogging:
   private val projectId: String = configuration.get[String]("google.bucket.projectId")
   private val bucketName: String = configuration.get[String]("google.bucket.bucketName")
-  private val credentialsFilePath: String = configuration.get[String]("google.bucket.credentialsFilePath")
+  private val jsonString: String = configuration.get[String]("google.bucket.credentialsFile")
 
-  private val credentials = GoogleCredentials.fromStream(new FileInputStream(credentialsFilePath))
+  private val byteArrayInputStream: ByteArrayInputStream = new ByteArrayInputStream(jsonString.getBytes("UTF-8"))
+
+
+  private val credentials = GoogleCredentials.fromStream(byteArrayInputStream)
+
 
   private val storage = StorageOptions
     .newBuilder()

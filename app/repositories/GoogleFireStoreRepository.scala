@@ -8,7 +8,7 @@ import models.FileItem
 import play.api.Configuration
 import utils.asScala
 
-import java.io.FileInputStream
+import java.io.{ByteArrayInputStream, FileInputStream}
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 import scala.jdk.CollectionConverters.*
@@ -20,9 +20,12 @@ class GoogleFireStoreRepository @Inject() (configuration: Configuration)(using e
 
   private val projectId: String = configuration.get[String]("google.firestore.projectId")
   private val collectionId: String = configuration.get[String]("google.firestore.collectionId")
-  private val credentialsFilePath: String = configuration.get[String]("google.firestore.credentialsFilePath")
+  private val jsonString: String = configuration.get[String]("google.firestore.credentialsFile")
 
-  private val credentials = GoogleCredentials.fromStream(new FileInputStream(credentialsFilePath))
+  private val byteArrayInputStream: ByteArrayInputStream = new ByteArrayInputStream(jsonString.getBytes("UTF-8"))
+
+
+  private val credentials = GoogleCredentials.fromStream(byteArrayInputStream)
 
   private val db = FirestoreOptions
     .newBuilder()
