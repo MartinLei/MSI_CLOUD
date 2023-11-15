@@ -1,8 +1,9 @@
-FROM sbtscala/scala-sbt:eclipse-temurin-jammy-21.0.1_12_1.9.7_3.3.1
+FROM sbtscala/scala-sbt:eclipse-temurin-focal-17.0.9_9_1.9.7_3.3.1
 RUN apt-get update && apt-get install && apt-get install unzip --yes
 
 ARG UID=1000
 ARG GID=1000
+ARG JAVA_TOOL_OPTIONS="$JAVA_TOOL_OPTIONS --add-exports=java.base/sun.security.x509=ALL-UNNAMED";
 
 RUN groupadd -g "${GID}" app \
   && useradd --create-home --no-log-init -u "${UID}" -g "${GID}" app
@@ -15,12 +16,11 @@ RUN set -x &&  \
     rm /srv/app/bin/*.bat &&  \
     mv /srv/app/bin/* /srv/app/bin/start
 
-RUN mkdir -p /srv/credentials # TODO still needed?
+RUN mkdir -p /srv/credentials
 RUN chown -R app:app /srv
 
 USER app
-#CMD ["sleep", "1000"]
-CMD /srv/app/bin/start -Dhttps.port=9000 -Dconfig.file=/srv/app/conf/prod.conf -Dplay.http.secret.key=${APPLICATION_SECRET}
+ENTRYPOINT /srv/app/bin/start -Dhttp.port=8080 -Dconfig.file=/srv/app/conf/prod.conf -Dplay.http.secret.key=${APPLICATION_SECRET}
 
 
 

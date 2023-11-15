@@ -4,6 +4,12 @@ version := "1.0-SNAPSHOT"
 lazy val cloudBoxApp = (project in file("."))
   .enablePlugins(PlayScala)
 
+Universal / javaOptions ++= Seq(
+  "-J-Xmx64m",
+  // fix play bug with https in prod mode https://github.com/playframework/playframework/issues/11209
+  "-J--add-exports=java.base/sun.security.x509=ALL-UNNAMED",
+)
+
 // play
 libraryDependencies += guice
 libraryDependencies += "org.scalatestplus.play" %% "scalatestplus-play" % "7.0.0" % Test
