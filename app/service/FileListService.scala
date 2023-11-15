@@ -1,40 +1,33 @@
 package service
 
+import com.typesafe.scalalogging.LazyLogging
 import models.{FileItem, FileItemDto, FileItemsDto}
-import play.api.Logger
 import play.api.libs.Files.TemporaryFile
 import play.api.mvc.MultipartFormData.*
-import repositories.{FileListRepository, GoogleBucketRepository}
+import repositories.{GoogleBucketRepository, GoogleFireStoreRepository}
 
-import java.nio.file.{Files, Paths}
+import java.nio.file.Paths
 import java.security.MessageDigest
-import java.time.LocalDate
 import javax.inject.Inject
 import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.duration.Duration
-import scala.concurrent.{Await, Future}
-import scala.util.hashing.MurmurHash3
+import scala.concurrent.Future
 
 class FileListService @Inject() (
-    val fileListRepository: FileListRepository,
-    val googleBucketRepository: GoogleBucketRepository
-):
-
-  private val logger = Logger(getClass)
+    googleBucketRepository: GoogleBucketRepository,
+    googleFireStoreRepository: GoogleFireStoreRepository
+) extends LazyLogging:
 
   def getAllItemMetadata: Future[FileItemsDto] =
-    fileListRepository.findAll
-      .map(items => items.map(item => FileItemDto.from(item)))
-      .map(itemsDto => FileItemsDto(itemsDto))
+    for
+      items <- googleFireStoreRepository.findAll
+      itemsDto = items.map(item => FileItemDto.from(item))
+    yield FileItemsDto(itemsDto)
 
   def search(name: String): Future[FileItemsDto] =
-    fileListRepository.findAll
-      .map(items =>
-        items
-          .filter(item => item.itemName.contains(name) || item.fileName.contains(name))
-          .map(item => FileItemDto.from(item))
-      )
-      .map(itemsDto => FileItemsDto(itemsDto))
+    for
+      items <- googleFireStoreRepository.search(name)
+      itemsDto = items.map(item => FileItemDto.from(item))
+    yield FileItemsDto(itemsDto)
 
   def addFileItem(itemName: String, file: FilePart[TemporaryFile]): Future[Int] =
     // only get the last part of the filename
@@ -51,16 +44,24 @@ class FileListService @Inject() (
 
     googleBucketRepository.upload(filePath, bucketItemId)
 
-    val newItem = new FileItem(0, itemName, fileName, contentType, bucketItemId)
-    fileListRepository.save(newItem)
+    val newItem = new FileItem("-", itemName, fileName, contentType, bucketItemId)
+    googleFireStoreRepository.save(newItem)
 
-  def getFileItem(id: Int): Future[Option[FileItem]] =
-    fileListRepository.findById(id)
+  def getFileItem(documentId: String): Future[Option[FileItem]] =
+    googleFireStoreRepository.findById(documentId)
 
-  def removeFileItem(id: Int): Future[Int] =
-    Await.result(fileListRepository.findById(id), Duration.Inf) match
-      case Some(fileItem: FileItem) =>
-        googleBucketRepository.delete(fileItem.bucketItemId)
-        fileListRepository.removeById(id)
-      case None =>
-        Future.failed(new NoSuchElementException())
+  def deleteFileItem(documentId: String): Future[Option[String]] =
+    for
+      maybeFileItem <- googleFireStoreRepository.findById(documentId)
+      result <- maybeFileItem match
+        case None => Future.failed(new IllegalArgumentException(s"No fileItem with $documentId found"))
+        case Some(_) =>
+          googleBucketRepository.delete(documentId)
+          googleFireStoreRepository
+            .delete(documentId)
+            .map(_ => Some(documentId))
+    yield result
+
+  def deleteAll(): Unit =
+    googleBucketRepository.deleteAll()
+    googleFireStoreRepository.deleteAll()

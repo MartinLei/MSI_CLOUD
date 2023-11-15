@@ -3,21 +3,25 @@ package repositories
 import com.google.auth.oauth2.GoogleCredentials
 import com.google.cloud.storage.{BlobId, BlobInfo, Storage, StorageOptions}
 import com.google.inject.Inject
-import play.api.{Configuration, Logger}
+import com.typesafe.scalalogging.LazyLogging
+import play.api.Configuration
+import play.api.libs.json._
 
-import java.io.FileInputStream
-import java.nio.file.{Path, Paths}
 
+import java.io.{ByteArrayInputStream, FileInputStream}
+import java.nio.file.Path
 import scala.jdk.CollectionConverters.*
 
-class GoogleBucketRepository @Inject() (configuration: Configuration):
-  private val logger = Logger(getClass)
-
+class GoogleBucketRepository @Inject() (configuration: Configuration) extends LazyLogging:
   private val projectId: String = configuration.get[String]("google.bucket.projectId")
   private val bucketName: String = configuration.get[String]("google.bucket.bucketName")
-  private val credentialsFilePath: String = configuration.get[String]("google.bucket.credentialsFilePath")
+  private val jsonString: String = configuration.get[String]("google.bucket.credentialsFile")
 
-  private val credentials = GoogleCredentials.fromStream(new FileInputStream(credentialsFilePath))
+  private val byteArrayInputStream: ByteArrayInputStream = new ByteArrayInputStream(jsonString.getBytes("UTF-8"))
+
+
+  private val credentials = GoogleCredentials.fromStream(byteArrayInputStream)
+
 
   private val storage = StorageOptions
     .newBuilder()
@@ -53,11 +57,9 @@ class GoogleBucketRepository @Inject() (configuration: Configuration):
     val blobId = BlobId.of(bucketName, prefixFileName + bucketItemId)
     storage.readAllBytes(blobId)
 
-  def delete(fileName: String): Unit =
-
+  def delete(fileName: String): Boolean =
     val blobId = BlobId.of(bucketName, prefixFileName + fileName)
     storage.delete(blobId)
-    logger.info(s"Delete file $fileName")
 
   /** Only used for debugging purpose. For deleting all files in the bucket.
     */
@@ -65,8 +67,13 @@ class GoogleBucketRepository @Inject() (configuration: Configuration):
     val batch = storage.batch
     val blobs = storage
       .list(bucketName, Storage.BlobListOption.currentDirectory, Storage.BlobListOption.prefix(prefixFileName))
+      .iterateAll
+      .asScala
 
-    for blob <- blobs.iterateAll.asScala do batch.delete(blob.getBlobId)
+    if blobs.isEmpty then
+      logger.info(s"Bucket is empty")
+      return
 
+    for blob <- blobs do batch.delete(blob.getBlobId)
     batch.submit()
     logger.info(s"Delete all files in bucket with prefix name $prefixFileName")

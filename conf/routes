@@ -16,10 +16,13 @@ GET    /search                      controllers.FileListController.search(name: 
 # upload file with a name - http://localhost:9000/upload?itemName=Test
 # Note: Postmann add picture at Body with key file
 + nocsrf
-POST   /upload                      controllers.FileUploadController.upload(itemName: String)
+POST   /upload                      controllers.FileListController.upload(itemName: String)
 
 # download file with given id - http://localhost:9000/download/2
-GET    /download/:id                controllers.FileListController.downloadFile(id: Int)
+GET    /download/:id                controllers.FileListController.downloadFile(id: String)
 
 # delete file with given id - http://localhost:9000/delete/2
-POST   /delete/:id                  controllers.FileDeleteController.delete(id: Int)
+POST   /delete/:id                  controllers.FileListController.delete(id: String)
+
+# delete all saved fileItem with given id - http://localhost:9000/deleteAll
+GET   /deleteAll                  controllers.FileListController.deleteAll()
