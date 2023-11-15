@@ -6,10 +6,10 @@ lazy val cloudBoxApp = (project in file("."))
 
 // play
 libraryDependencies += guice
-libraryDependencies += "org.scalatestplus.play" %% "scalatestplus-play" % "6.0.0" % Test
+libraryDependencies += "org.scalatestplus.play" %% "scalatestplus-play" % "7.0.0" % Test
 
 // logging
-libraryDependencies += "ch.qos.logback" % "logback-classic" % "1.2.10"
+libraryDependencies += "ch.qos.logback" % "logback-classic" % "1.4.7"
 libraryDependencies += "com.typesafe.scala-logging" %% "scala-logging" % "3.9.5"
 
 // google bucket

@@ -1,6 +1,6 @@
 package service
 
-import akka.util.Timeout
+import play.api.test.Helpers.defaultAwaitTimeout
 import models.{FileItem, FileItemDto, FileItemsDto}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
@@ -16,7 +16,7 @@ import scala.concurrent.Future
 import scala.concurrent.duration.*
 
 class FileListServiceTest extends PlaySpec with GuiceOneAppPerTest with Injecting with MockitoSugar:
-  given defaultAwaitTimeout: Timeout = 2.seconds
+ // given defaultAwaitTimeout: Timeout = 2.seconds
 
   val googleBucketRepositoryMock: GoogleBucketRepository = mock[GoogleBucketRepository]
   val googleFireStoreRepositoryMock: GoogleFireStoreRepository = mock[GoogleFireStoreRepository]
