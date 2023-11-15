@@ -3,7 +3,6 @@
 /.idea
 ../dev-tools
 logs
-target
 test
 *.conf
 *.md
