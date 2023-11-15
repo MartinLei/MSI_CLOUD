@@ -10,4 +10,4 @@
 *.g8
 
 .idea/
-**/dev-tools/credentials/*
+/dev-tools/credentials/*
