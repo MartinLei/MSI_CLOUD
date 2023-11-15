@@ -1,22 +1,13 @@
-name := """cloud"""
-organization := "de.htwg"
+name := "cloudBox-root"
 
-version := "1.0-SNAPSHOT"
+Global / organization := "de.htwg.msi.cda.cloudbox"
 
-lazy val root = (project in file(".")).enablePlugins(PlayScala)
+Global / scalaVersion := "3.3.1"
 
-scalaVersion := "3.3.1"
+lazy val root = project.in(file("."))
 
-// play
-libraryDependencies += guice
-libraryDependencies += "org.scalatestplus.play" %% "scalatestplus-play" % "6.0.0-RC2" % Test
+lazy val cloudBoxApp = project
+  .enablePlugins(PlayScala)
 
-// logging
-libraryDependencies += "ch.qos.logback" % "logback-classic" % "1.2.10"
-libraryDependencies += "com.typesafe.scala-logging" %% "scala-logging" % "3.9.5"
-
-// google bucket
-libraryDependencies += "com.google.cloud" % "google-cloud-storage" % "2.29.0"
-
-// google firestore nosql
-libraryDependencies += "com.google.firebase" % "firebase-admin" % "9.2.0"
+lazy val imageRecognitionApp = project
+  .enablePlugins(PlayScala)

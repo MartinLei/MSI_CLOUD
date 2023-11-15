@@ -1,0 +1,28 @@
+# Routes
+# This file defines all application routes (Higher priority routes first)
+# https://www.playframework.com/documentation/latest/ScalaRouting
+# ~~~~
+
+GET     /assets/*file               controllers.Assets.versioned(path="/public", file: Asset)
+
+GET     /                           controllers.FileListController.index()
+
+# show all given items - http://localhost:9000/files
+GET     /files                      controllers.FileListController.getAllItemMetadata()
+
+# search for a name - http://localhost:9000/search?name=Test
+GET    /search                      controllers.FileListController.search(name: String)
+
+# upload file with a name - http://localhost:9000/upload?itemName=Test
+# Note: Postmann add picture at Body with key file
++ nocsrf
+POST   /upload                      controllers.FileListController.upload(itemName: String)
+
+# download file with given id - http://localhost:9000/download/2
+GET    /download/:id                controllers.FileListController.downloadFile(id: String)
+
+# delete file with given id - http://localhost:9000/delete/2
+POST   /delete/:id                  controllers.FileListController.delete(id: String)
+
+# delete all saved fileItem with given id - http://localhost:9000/deleteAll
+GET   /deleteAll                  controllers.FileListController.deleteAll()

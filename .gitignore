@@ -1,13 +1,13 @@
-logs
-target
-/.bsp
-/.idea
-/.idea_modules
-/.classpath
-/.project
-/.settings
-/RUNNING_PID
-/.g8
+**/logs
+**/target
+**/.idea_modules
+**/RUNNING_PID
+
+*.bsp
+*.classpath
+*.project
+*.settings
+*.g8
 
 .idea/
-/dev-tools/credentials/*
+**/dev-tools/credentials/*

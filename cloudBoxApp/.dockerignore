@@ -1,0 +1,9 @@
+/.bsp
+/.github
+/.idea
+../dev-tools
+logs
+target
+test
+*.conf
+*.md
