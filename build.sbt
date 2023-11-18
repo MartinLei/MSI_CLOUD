@@ -8,10 +8,6 @@ lazy val cloudBoxApp = project
   .enablePlugins(PlayScala)
   .settings(commonSettings)
 
-lazy val imageRecognitionApp = project
-  .enablePlugins(PlayScala)
-  .settings(commonSettings)
-
 
 lazy val commonSettings = Seq(
   organization := "de.htwg.msi.cda.cloudbox",

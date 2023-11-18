@@ -1,13 +1,32 @@
-**/logs
-**/target
+.idea/
 **/.idea_modules
 **/RUNNING_PID
 
+# Folders
+/dev-tools/credentials/*
+
+# Scala
+**/logs
+**/target
 *.bsp
 *.classpath
 *.project
 *.settings
 *.g8
 
-.idea/
-/dev-tools/credentials/*
+
+# Node
+logs
+*.log
+npm-debug.log*
+pids
+*.pid
+*.seed
+*.pid.lock
+lib-cov
+coverage
+.npm
+.eslintcache
+.env
+node_modules/
+dist/

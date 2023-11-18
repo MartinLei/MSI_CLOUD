@@ -1,9 +1,0 @@
-# Routes
-# This file defines all application routes (Higher priority routes first)
-# https://www.playframework.com/documentation/latest/ScalaRouting
-# ~~~~
-
-# upload file with a name - http://localhost:9000/upload?itemName=Test
-# Note: Postmann add picture at Body with key file
-+ nocsrf
-POST   /analyseImage                 controllers.FileListController.analyseImage(itemName: String)
