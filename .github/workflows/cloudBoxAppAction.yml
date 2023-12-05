@@ -13,6 +13,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           sparse-checkout: |
+            build.sbt
             .github
             cloudBoxApp
       - name: Set up JDK 21
