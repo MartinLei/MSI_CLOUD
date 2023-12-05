@@ -50,10 +50,8 @@ jobs:
           credentials_json: '${{ secrets.B64_GCLOUD_SERVICE_ACCOUNT_JSON }}'
       - uses: RafikFarhad/push-to-gcr-github-action@v5-beta
         with:
-          # gcloud_service_key: ${{ secrets.GCLOUD_SERVICE_KEY }} # can be base64 encoded or plain text || not needed if you use google-github-actions/auth
-          registry: gcr.io
+          registry: eu.gcr.io
           project_id: spring-monolith-403010
           image_name: cloudboxapp
           image_tag: latest,v1
-          #dockerfile: ./cloudBoxApp/Dockerfile
           context: ./cloudBoxApp
