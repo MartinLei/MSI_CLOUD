@@ -1,16 +1,16 @@
-name := "cloudBox-root"
+name := "animalProtect-root"
 Global / scalaVersion := "3.3.1"
 
 lazy val root = project.in(file("."))
   //.settings(commonSettings)
 
-lazy val cloudBoxApp = project
+lazy val animalProtectApp = project
   .enablePlugins(PlayScala)
   .settings(commonSettings)
 
 
 lazy val commonSettings = Seq(
-  organization := "de.htwg.msi.cda.cloudbox",
+  organization := "de.htwg.msi.cda.animalprotect",
   scalaVersion := "3.3.1",
   scalacOptions ++= Seq("-deprecation", "-feature"),
   libraryDependencies ++= commonDependencies

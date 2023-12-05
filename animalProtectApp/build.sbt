@@ -1,7 +1,7 @@
-name := """cloudBox-app"""
+name := """animalProtect-app"""
 version := "1.0-SNAPSHOT"
 
-lazy val cloudBoxApp = (project in file("."))
+lazy val animalProtectApp = (project in file("."))
   .enablePlugins(PlayScala)
 
 

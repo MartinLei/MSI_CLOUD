@@ -1,2 +1,2 @@
 #!/bin/sh
-sbt ";project cloudBoxApp;~run"
+sbt ";project animalProtectApp;~run"
