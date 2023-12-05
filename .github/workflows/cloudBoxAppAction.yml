@@ -1,4 +1,4 @@
-name: qualityChecks
+name: cloudBoxAppAction
 on:
   push:
     branches:
@@ -51,7 +51,7 @@ jobs:
       - uses: RafikFarhad/push-to-gcr-github-action@v5-beta
         with:
           registry: europe-docker.pkg.dev
-          project_id: spring-monolith-403010
+          project_id: spring-monolith-403010/europe-docker.pkg.dev
           image_name: cloudboxapp
           image_tag: latest,v1
           context: ./cloudBoxApp
