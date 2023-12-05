@@ -11,6 +11,9 @@ on:
 jobs:
   check:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: imageRecognitionApp
     steps:
       - uses: actions/checkout@v4
         with:
