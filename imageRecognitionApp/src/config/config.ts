@@ -11,7 +11,7 @@ export { ENVIRONMENT, SERVER_PORT };
 function createProductionEnvironment() {
   SERVER_PORT = process.env.SERVER_PORT
     ? Number.parseInt(process.env.SERVER_PORT)
-    : 80;
+    : 8080;
 }
 
 function createLocalEnvironment() {

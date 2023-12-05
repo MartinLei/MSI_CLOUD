@@ -1,12 +1,8 @@
 {
-  "name": "express-seed",
+  "name": "imageRecognitionApp",
   "version": "1.0.0",
-  "description": "Seed project for express services. With typescript, jest and watcher for changes.",
-  "main": "index.js",
+  "description": "imageRecognitionApp.",
   "scripts": {
-    "test": "jest",
-    "test:watch": "jest --watchAll",
-    "test:watchChanged": " jest --watch",
     "build": "tsc",
     "start": "cross-env NODE_ENV=local node -r ts-node/register ./src/index.ts environment=local",
     "start:dev": "cross-env NODE_ENV=local nodemon --watch 'src/**/*.ts' --exec 'ts-node' src/index.ts environment=local",
