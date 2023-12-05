@@ -7,7 +7,8 @@
     "start": "cross-env NODE_ENV=local node -r ts-node/register ./src/index.ts environment=local",
     "start:dev": "cross-env NODE_ENV=local nodemon --watch 'src/**/*.ts' --exec 'ts-node' src/index.ts environment=local",
     "start:production": "cross-env NODE_ENV=production node dist/index.js",
-    "lint": "eslint src --ext .ts --fix"
+    "lint": "eslint src --ext .ts --fix",
+    "lint:ci": "eslint src --ext .ts"
   },
   "author": "msi",
   "license": "MIT",

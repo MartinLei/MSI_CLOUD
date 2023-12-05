@@ -17,5 +17,5 @@ RUN mkdir -p /srv/credentials
 RUN chown -R app:app /srv
 
 USER app
-ENTRYPOINT ["npm", "start"]
+ENTRYPOINT ["npm", "run", "start:production"]
 

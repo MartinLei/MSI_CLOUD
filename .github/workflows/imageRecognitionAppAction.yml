@@ -32,4 +32,24 @@ jobs:
       - name: build js files
         run: npm run build
       - name: Format check
-        run: npm run lint
+        run: npm run lint:ci
+  build-and-push-to-gcr:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: 'read'
+      id-token: 'write'
+    steps:
+      - uses: actions/checkout@v4
+      - name: Authenticate to Google Cloud
+        id: auth
+        uses: google-github-actions/auth@v2
+        with:
+          # used https://cloud.google.com/vision/docs/base64?hl=de#linux to create b64 encoded from oauth.json
+          credentials_json: '${{ secrets.B64_GCLOUD_SERVICE_ACCOUNT_JSON }}'
+      - uses: RafikFarhad/push-to-gcr-github-action@v5-beta
+        with:
+          registry: europe-west3-docker.pkg.dev
+          project_id: spring-monolith-403010/animalprotect-docker-repo
+          image_name: imageRecognitionApp
+          image_tag: latest,v1
+          context: ./imageRecognitionApp
