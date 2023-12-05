@@ -10,7 +10,10 @@ on:
       - 'imageRecognitionApp/**'
 jobs:
   check:
-    runs-on: ubuntu-latest>
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: imageRecognitionApp
     steps:
       - uses: actions/checkout@v4
         with:
@@ -23,8 +26,6 @@ jobs:
         with:
          node-version: 20.x
          cache: 'npm'
-      - name: Change directory
-        run: cd ./imageRecognitionApp
       - name: Install dependencies
         run: npm ci
       - name: build js files
