@@ -1,32 +1,15 @@
 import express from "express";
 import Helmet from "helmet";
-import {Version1Router} from "./api/v1/routes/version1.router";
 import {Logger} from "./utils/logger/logger";
 import colors from "colors/safe";
-import multer from "multer";
-import {memoryStorage} from "multer";
 import KafakConsumer from "./services/KafakConsumer";
 import {ExecuteImageJob} from "./services/ExecuteImageJob";
 import {ImageDetectorService} from "./services/ImageDetectorService";
-
-const storage = memoryStorage(); // Store the file in memory as a buffer
-const upload = multer({storage: storage});
 
 const logger = Logger.getLogger("launcher");
 
 const app: express.Application = express();
 app.use(Helmet());
-
-app.use("/", new Version1Router().router);
-
-app.post("/upload_files", upload.array("files"), uploadFiles);
-
-function uploadFiles(req: express.Request, res: express.Response) {
-    console.log(req.body);
-    console.log(req.files);
-    res.json({message: "Successfully uploaded files"});
-}
-
 
 // Start the server
 const SERVER_PORT = 9090
