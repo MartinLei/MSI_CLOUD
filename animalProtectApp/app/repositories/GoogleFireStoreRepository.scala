@@ -6,17 +6,32 @@ import com.google.cloud.firestore.*
 import com.typesafe.scalalogging.LazyLogging
 import models.FileItem
 import play.api.Configuration
+import play.api.inject.ApplicationLifecycle
 import utils.asScala
 
 import java.io.FileInputStream
 import javax.inject.Inject
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.{ExecutionContext, Future, Promise}
 import scala.jdk.CollectionConverters.*
 import scala.language.postfixOps
 import scala.util.{Failure, Success}
 
-class GoogleFireStoreRepository @Inject() (configuration: Configuration)(using ec: ExecutionContext)
-    extends LazyLogging:
+class GoogleFireStoreRepository @Inject()(
+                                           configuration: Configuration,
+                                           lifecycle: ApplicationLifecycle)(using ec: ExecutionContext)
+  extends LazyLogging:
+  
+  lifecycle.addStopHook(() => {
+    val promise = Promise[Unit]()
+    try {
+      db.close()
+      promise.success(())
+    } catch {
+      case e: Throwable =>
+        promise.failure(e)
+    }
+    promise.future
+  })
 
   private val projectId: String = configuration.get[String]("google.firestore.projectId")
   private val collectionId: String = configuration.get[String]("google.firestore.collectionId")
@@ -67,7 +82,7 @@ class GoogleFireStoreRepository @Inject() (configuration: Configuration)(using e
       .map(w => documentId)
 
   /** Only used for debugging purpose. For deleting all files in the bucket.
-    */
+   */
   def deleteAll(): Unit =
     val batch = db.batch()
     val documents = db.collection(collectionId).get().get().asScala
