@@ -28,7 +28,9 @@
   </root>
 
   <logger name="play" level="INFO"/>
-  <logger name="application" level="DEBUG"/>
+  <!--<logger name="application" level="DEBUG"/> for production?-->
+  <logger name="org.apache.pekko" level="WARN"/>
   <logger name="com.zaxxer.hikari" level="WARN"/>
+  <logger name="org.apache.kafka" level="WARN"/>
 
 </configuration>
