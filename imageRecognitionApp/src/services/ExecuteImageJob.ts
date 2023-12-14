@@ -1,4 +1,4 @@
-import {ImageJob} from "./ImageJob";
+import {ImageJob} from "../modle/ImageJob";
 import {Logger} from "../utils/logger/logger";
 import {ImageDetectorService} from "./ImageDetectorService";
 

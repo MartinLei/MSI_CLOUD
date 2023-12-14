@@ -1,7 +1,7 @@
 import * as tf from "@tensorflow/tfjs-node";
 import * as cocoSsd from "@tensorflow-models/coco-ssd";
 import {Logger} from "../utils/logger/logger";
-import {ImageJob} from "./ImageJob";
+import {ImageJob} from "../modle/ImageJob";
 
 const logger = Logger.getLogger("ImageDetectorController");
 

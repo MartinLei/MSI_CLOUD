@@ -1,6 +1,6 @@
 import {Consumer, ConsumerSubscribeTopics, EachBatchPayload, EachMessagePayload, Kafka} from 'kafkajs'
 import {Logger} from "../utils/logger/logger";
-import {ImageJob} from "./ImageJob";
+import {ImageJob} from "../modle/ImageJob";
 import {ExecuteImageJob} from "./ExecuteImageJob";
 
 const  logger = Logger.getLogger("kafkaConsumer");

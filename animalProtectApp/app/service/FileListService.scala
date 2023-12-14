@@ -58,7 +58,7 @@ class FileListService @Inject() (
 
     // give image recognition app a job
     val message = ImageRecognitionMessage(bucketItemId, ImageHelper.readImageFromPath(filePath, contentType))
-    kafkaProducerRepository.sendToImageRecognitionApp(message)
+    //kafkaProducerRepository.sendToImageRecognitionApp(message) // TODO activate
 
 
   def getFileItem(documentId: String): Future[Option[FileItem]] =
