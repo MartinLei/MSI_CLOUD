@@ -36,10 +36,14 @@ See conf/routes for available endpoints.
 - docker for the postgresql db
 
 ## Database
-
-- postgresql 16 
+- google firestore and google bucket
 
 # Developing
+### Kafka
+Using [Kafka Stack](https://github.com/conduktor/kafka-stack-docker-compose)
+```docker compose -f zk-single-kafka-single.yml up```
+
+
 
 ## Linting
 

@@ -50,15 +50,15 @@ class FileListService @Inject() (
       .mkString
 
     // save image
-    googleBucketRepository.upload(filePath, bucketItemId)
+    //googleBucketRepository.upload(filePath, bucketItemId)
 
     // save meta data
     val newItem = new FileItem("-", itemName, fileName, contentType, bucketItemId)
-    googleFireStoreRepository.save(newItem)
+    //googleFireStoreRepository.save(newItem)
 
     // give image recognition app a job
-    val message = ImageRecognitionMessage(bucketItemId, ImageHelper.readImageFromPath(filePath, contentType))
-    // kafkaProducerRepository.sendToImageRecognitionApp(message) // TODO
+    val message = ImageRecognitionMessage(bucketItemId, Array[Byte](1,2))//ImageRecognitionMessage(bucketItemId, ImageHelper.readImageFromPath(filePath, contentType))
+    kafkaProducerRepository.sendToImageRecognitionApp(message)
 
   def getFileItem(documentId: String): Future[Option[FileItem]] =
     googleFireStoreRepository.findById(documentId)

@@ -30,6 +30,8 @@ class KafkaProducerRepository @Inject() (lifecycle: ApplicationLifecycle) extend
   lifecycle.addStopHook(() => producer.close())
 
   def sendToImageRecognitionApp(message: Message): Unit =
+    logger.info("Send job to imageRecognitionApp")
+
     val record = generateRecord(imageRecognitionAppKey, message)
     val send: Future[RecordMetadata] = producer.send(record)
 
