@@ -12,21 +12,20 @@ import java.nio.file.Path
 import scala.concurrent.Promise
 import scala.jdk.CollectionConverters.*
 
-class GoogleBucketRepository @Inject() (configuration: Configuration,
-                                        lifecycle: ApplicationLifecycle) extends LazyLogging:
+class GoogleBucketRepository @Inject() (configuration: Configuration, lifecycle: ApplicationLifecycle)
+    extends LazyLogging:
 
-  lifecycle.addStopHook(() => {
+  lifecycle.addStopHook { () =>
     val promise = Promise[Unit]()
-    try {
+    try
       storage.close()
       promise.success(())
-    } catch {
+    catch
       case e: Throwable =>
         promise.failure(e)
-    }
     promise.future
-  })
-  
+  }
+
   private val projectId: String = configuration.get[String]("google.bucket.projectId")
   private val bucketName: String = configuration.get[String]("google.bucket.bucketName")
   private val credentialsFilePath: String = configuration.get[String]("google.bucket.credentialsFilePath")

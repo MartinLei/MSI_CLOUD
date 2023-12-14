@@ -16,22 +16,20 @@ import scala.jdk.CollectionConverters.*
 import scala.language.postfixOps
 import scala.util.{Failure, Success}
 
-class GoogleFireStoreRepository @Inject()(
-                                           configuration: Configuration,
-                                           lifecycle: ApplicationLifecycle)(using ec: ExecutionContext)
-  extends LazyLogging:
-  
-  lifecycle.addStopHook(() => {
+class GoogleFireStoreRepository @Inject() (configuration: Configuration, lifecycle: ApplicationLifecycle)(using
+    ec: ExecutionContext
+) extends LazyLogging:
+
+  lifecycle.addStopHook { () =>
     val promise = Promise[Unit]()
-    try {
+    try
       db.close()
       promise.success(())
-    } catch {
+    catch
       case e: Throwable =>
         promise.failure(e)
-    }
     promise.future
-  })
+  }
 
   private val projectId: String = configuration.get[String]("google.firestore.projectId")
   private val collectionId: String = configuration.get[String]("google.firestore.collectionId")
@@ -82,7 +80,7 @@ class GoogleFireStoreRepository @Inject()(
       .map(w => documentId)
 
   /** Only used for debugging purpose. For deleting all files in the bucket.
-   */
+    */
   def deleteAll(): Unit =
     val batch = db.batch()
     val documents = db.collection(collectionId).get().get().asScala

@@ -16,8 +16,7 @@ import repositories.kafka.model.Message
 import scala.concurrent.duration.*
 import scala.concurrent.{Await, Future}
 
-
-class KafkaProducerRepository @Inject()(lifecycle: ApplicationLifecycle) extends LazyLogging {
+class KafkaProducerRepository @Inject() (lifecycle: ApplicationLifecycle) extends LazyLogging:
   implicit val system: ActorSystem = ActorSystem("producer-sample")
 
   private val kafkaTopic = "test"
@@ -28,9 +27,7 @@ class KafkaProducerRepository @Inject()(lifecycle: ApplicationLifecycle) extends
 
   private val producer = SendProducer(producerSettings)
 
-  lifecycle.addStopHook(() => {
-    producer.close()
-  })
+  lifecycle.addStopHook(() => producer.close())
 
   def sendToImageRecognitionApp(message: Message): Unit =
     val record = generateRecord(imageRecognitionAppKey, message)
@@ -39,8 +36,6 @@ class KafkaProducerRepository @Inject()(lifecycle: ApplicationLifecycle) extends
     // Blocking here for illustration only, you need to handle the future result
     Await.result(send, 2.seconds)
 
-  private def generateRecord(key : String, message: Message): ProducerRecord[String, String] =
+  private def generateRecord(key: String, message: Message): ProducerRecord[String, String] =
     val jsonMessage = message.asJson.noSpaces
     new ProducerRecord[String, String](kafkaTopic, key, jsonMessage)
-
-}

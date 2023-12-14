@@ -18,11 +18,11 @@ import javax.inject.Inject
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-class FileListService @Inject()(
-                                 googleBucketRepository: GoogleBucketRepository,
-                                 googleFireStoreRepository: GoogleFireStoreRepository,
-                                 kafkaProducerRepository: KafkaProducerRepository
-                               ) extends LazyLogging:
+class FileListService @Inject() (
+    googleBucketRepository: GoogleBucketRepository,
+    googleFireStoreRepository: GoogleFireStoreRepository,
+    kafkaProducerRepository: KafkaProducerRepository
+) extends LazyLogging:
 
   def getAllItemMetadata: Future[FileItemsDto] =
     for
@@ -58,8 +58,8 @@ class FileListService @Inject()(
 
     // give image recognition app a job
     val message = ImageRecognitionMessage(bucketItemId, ImageHelper.readImageFromPath(filePath, contentType))
-    //kafkaProducerRepository.sendToImageRecognitionApp(message) // TODO
-  
+    // kafkaProducerRepository.sendToImageRecognitionApp(message) // TODO
+
   def getFileItem(documentId: String): Future[Option[FileItem]] =
     googleFireStoreRepository.findById(documentId)
 
