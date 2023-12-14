@@ -1,30 +1,27 @@
-import { Request, Response } from "express";
 import * as tf from "@tensorflow/tfjs-node";
 import * as cocoSsd from "@tensorflow-models/coco-ssd";
-import { Logger } from "../../../utils/logger/logger";
+import {Logger} from "../utils/logger/logger";
+import {ImageJob} from "./ImageJob";
 
 const logger = Logger.getLogger("ImageDetectorController");
 
-export class ImageDetectorController {
-  async analyseImage(req: Request, res: Response): Promise<any> {
-    const files = req.files as Express.Multer.File[];
+export class ImageDetectorService {
+  async analyseImage(imageJob: ImageJob): Promise<cocoSsd.DetectedObject[]> {
+    const uintArray = new Uint8Array(imageJob.imageByteArray);
+    const imageBuffer = Buffer.from(uintArray);
 
-    if (!files || files.length === 0) {
-      return res.status(400).send("No image were uploaded.");
+    if (!imageBuffer || imageBuffer.length === 0) {
+      return Promise.reject(new Error('Image is empty'));
     }
 
-    const imageName = files[0].originalname;
-    const imageBuffer = files[0].buffer;
-    const detectedObject = await this.analyse(imageName, imageBuffer);
-
-    res.json(detectedObject);
+    return await this.analyse(imageJob.bucketId, imageBuffer);
   }
 
   private async analyse(
-    imageName: string,
-    imageBuffer: Buffer,
+      bucketId: string,
+      imageBuffer: Buffer,
   ): Promise<cocoSsd.DetectedObject[]> {
-    logger.info(`-- Start analys image: "${imageName}" --`);
+    logger.info(`-- Start analyse image with bucketId: "${bucketId}" --`);
     const startTime1 = performance.now();
     const imageTensor = tf.node.decodeImage(imageBuffer);
     const startTime2 = performance.now();
@@ -44,7 +41,7 @@ export class ImageDetectorController {
     logger.info(`Load model: ${Math.floor(totalTime2)} ms`);
     logger.info(`Analyse: ${Math.floor(totalTime3)} ms`);
     logger.info(
-      `-- Finish analyse image "${imageName}" in ${Math.floor(
+      `-- Finish analyse image with bucketId "${bucketId}" in ${Math.floor(
         totalTime4,
       )} ms --`,
     );

@@ -57,8 +57,9 @@ class FileListService @Inject() (
     //googleFireStoreRepository.save(newItem)
 
     // give image recognition app a job
-    val message = ImageRecognitionMessage(bucketItemId, Array[Byte](1,2))//ImageRecognitionMessage(bucketItemId, ImageHelper.readImageFromPath(filePath, contentType))
+    val message = ImageRecognitionMessage(bucketItemId, ImageHelper.readImageFromPath(filePath, contentType))
     kafkaProducerRepository.sendToImageRecognitionApp(message)
+
 
   def getFileItem(documentId: String): Future[Option[FileItem]] =
     googleFireStoreRepository.findById(documentId)

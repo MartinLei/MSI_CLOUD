@@ -7,6 +7,7 @@ import multer from "multer";
 import {memoryStorage} from "multer";
 import KafakConsumer from "./services/KafakConsumer";
 import {ExecuteImageJob} from "./services/ExecuteImageJob";
+import {ImageDetectorService} from "./services/ImageDetectorService";
 
 const storage = memoryStorage(); // Store the file in memory as a buffer
 const upload = multer({storage: storage});
@@ -36,7 +37,8 @@ const server = app.listen(SERVER_PORT, () => {
     );
 });
 
-const executeImageJob = new ExecuteImageJob();
+const imageDetectorService = new ImageDetectorService();
+const executeImageJob = new ExecuteImageJob(imageDetectorService);
 const kafkaConsumer = new KafakConsumer(executeImageJob);
 kafkaConsumer.startConsumer('test')
     .then(() => logger.info("Listening on kafka topics"))
