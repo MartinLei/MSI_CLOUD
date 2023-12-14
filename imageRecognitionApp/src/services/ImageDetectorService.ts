@@ -1,7 +1,7 @@
 import * as tf from "@tensorflow/tfjs-node";
 import * as cocoSsd from "@tensorflow-models/coco-ssd";
-import {Logger} from "../utils/logger/logger";
-import {ImageJob} from "../modle/ImageJob";
+import { Logger } from "../utils/logger/logger";
+import { ImageJob } from "../modle/ImageJob";
 
 const logger = Logger.getLogger("ImageDetectorController");
 
@@ -11,15 +11,15 @@ export class ImageDetectorService {
     const imageBuffer = Buffer.from(uintArray);
 
     if (!imageBuffer || imageBuffer.length === 0) {
-      return Promise.reject(new Error('Image is empty'));
+      return Promise.reject(new Error("Image is empty"));
     }
 
     return await this.analyse(imageJob.bucketId, imageBuffer);
   }
 
   private async analyse(
-      bucketId: string,
-      imageBuffer: Buffer,
+    bucketId: string,
+    imageBuffer: Buffer,
   ): Promise<cocoSsd.DetectedObject[]> {
     logger.info(`-- Start analyse image with bucketId: "${bucketId}" --`);
     const startTime1 = performance.now();
