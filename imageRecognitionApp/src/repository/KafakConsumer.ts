@@ -11,12 +11,12 @@ import { ExecuteImageJob } from "../services/ExecuteImageJob";
 
 const logger = Logger.getLogger("kafkaConsumer");
 
-export default class KafakConsumer {
+export class KafakConsumer {
   private executeImageJob: ExecuteImageJob;
   private kafkaConsumer: Consumer;
 
-  public constructor(executeImageJob: ExecuteImageJob) {
-    this.kafkaConsumer = this.createKafkaConsumer("localhost:9092", "test");
+  public constructor(executeImageJob: ExecuteImageJob, server: string, groupId: string) {
+    this.kafkaConsumer = this.createKafkaConsumer(server, groupId);
     this.executeImageJob = executeImageJob;
   }
 
@@ -28,7 +28,9 @@ export default class KafakConsumer {
 
     try {
       await this.kafkaConsumer.connect();
+      logger.info("Connected to kafka")
       await this.kafkaConsumer.subscribe(topic);
+      logger.info(`Subscribed to topics '${topic.topics}'`)
 
       await this.kafkaConsumer.run({
         eachMessage: async (messagePayload: EachMessagePayload) => {
@@ -36,13 +38,17 @@ export default class KafakConsumer {
           const prefix = `${topic}[${partition} | ${message.offset}] / ${message.timestamp}`;
 
           logger.debug(`- ${prefix} KEY: ${message.key} MESSAGE LENGTH: ${message.value.length}`);
+          if(message?.key?.toString() === 'job'){
+            const imageJob = ImageJob.create(message);
+            await this.executeImageJob.run(imageJob);
+          } else {
+           logger.info(`KEY: ${message.key} unknown, ignore message`)
+          }
 
-          const imageJob = ImageJob.create(message);
-          await this.executeImageJob.run(imageJob);
         },
       });
     } catch (error) {
-      logger.info("Error: ", error);
+      logger.error('Error connecting the consumer: ', error)
     }
   }
 
@@ -65,7 +71,7 @@ export default class KafakConsumer {
         },
       });
     } catch (error) {
-      logger.info("Error: ", error);
+      logger.error(error);
     }
   }
 
@@ -76,7 +82,7 @@ export default class KafakConsumer {
 
   private createKafkaConsumer(server: string, groupId: string): Consumer {
     const kafka = new Kafka({
-      clientId: "imagerecognitionapp",
+      clientId: "image_recognition_app",
       brokers: [server],
     });
     return kafka.consumer({ groupId: groupId });
