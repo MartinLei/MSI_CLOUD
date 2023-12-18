@@ -2,7 +2,7 @@ import express from "express";
 import Helmet from "helmet";
 import { Logger } from "./utils/logger/logger";
 import colors from "colors/safe";
-import KafakConsumer from "./services/KafakConsumer";
+import KafakConsumer from "./repository/KafakConsumer";
 import { ExecuteImageJob } from "./services/ExecuteImageJob";
 import { ImageDetectorService } from "./services/ImageDetectorService";
 

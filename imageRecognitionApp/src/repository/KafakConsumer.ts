@@ -7,7 +7,7 @@ import {
 } from "kafkajs";
 import { Logger } from "../utils/logger/logger";
 import { ImageJob } from "../modle/ImageJob";
-import { ExecuteImageJob } from "./ExecuteImageJob";
+import { ExecuteImageJob } from "../services/ExecuteImageJob";
 
 const logger = Logger.getLogger("kafkaConsumer");
 
@@ -35,7 +35,7 @@ export default class KafakConsumer {
           const { topic, partition, message } = messagePayload;
           const prefix = `${topic}[${partition} | ${message.offset}] / ${message.timestamp}`;
 
-          logger.debug(`- ${prefix} ${message.key}#${message.value}`);
+          logger.debug(`- ${prefix} KEY: ${message.key} MESSAGE LENGTH: ${message.value.length}`);
 
           const imageJob = ImageJob.create(message);
           await this.executeImageJob.run(imageJob);
