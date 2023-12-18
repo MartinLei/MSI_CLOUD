@@ -23,10 +23,16 @@ const executeImageJob = new ExecuteImageJob(imageDetectorService);
 const kafkaConsumer = new KafakConsumer(executeImageJob);
 kafkaConsumer
   .startConsumer("test")
-  .then(() => logger.info("Listening on kafka topics"));
+  .then(() => logger.info("Listening to kafka topics"));
 
 // Graceful shutdown
+let shutdownIsRunning = false;
 process.on("SIGINT", async () => {
+  // Bug in node, SIGINT will be called twice if pressed CTR+C inside the terminal
+  if(shutdownIsRunning == true){
+    return;
+  }
+  shutdownIsRunning = true;
   logger.info("Server is gracefully shutting down...");
 
   try {
