@@ -19,8 +19,8 @@ import scala.concurrent.{Await, Future}
 class KafkaProducerRepository @Inject() (lifecycle: ApplicationLifecycle) extends LazyLogging:
   implicit val system: ActorSystem = ActorSystem("producer-sample")
 
-  private val kafkaTopic = "test"
-  private val imageRecognitionAppKey = "imagerecognitionapp"
+  private val kafkaTopic = "image_recognition"
+  private val imageRecognitionAppKey = "job"
 
   private val producerSettings =
     ProducerSettings(system, new StringSerializer, new StringSerializer)
