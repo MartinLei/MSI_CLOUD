@@ -51,5 +51,5 @@ jobs:
           registry: europe-west3-docker.pkg.dev
           project_id: spring-monolith-403010/animalprotect-docker-repo
           image_name: imagerecognitionapp
-          image_tag: latest,v1
+          image_tag: latest,v2
           context: ./imageRecognitionApp
