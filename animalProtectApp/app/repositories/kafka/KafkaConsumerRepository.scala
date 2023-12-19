@@ -16,7 +16,7 @@ import io.circe.parser.*
 import org.apache.kafka.clients.consumer.{ConsumerConfig, ConsumerRecord}
 import org.apache.kafka.common.serialization.StringDeserializer
 import play.api.inject.ApplicationLifecycle
-import repositories.kafka.model.{ImageRecognitionMessage, Message}
+import repositories.kafka.model.{ImageRecognitionJobMessage, ImageRecognitionResultMessage, Message}
 
 import scala.concurrent.duration.Duration
 
@@ -28,57 +28,35 @@ class KafkaConsumerRepository @Inject() (lifecycle: ApplicationLifecycle) extend
   private val mapToObject: Flow[ConsumerRecord[String, String], Message, NotUsed] =
     Flow[ConsumerRecord[String, String]]
       .map(message =>
-        logger.info("Receive message")
         decode[Message](message.value()) match
           case Left(df: DecodingFailure) => throw new IllegalArgumentException(s"Error:${df.message}")
           case Left(pf: ParsingFailure)  => throw new IllegalArgumentException(s"Error:${pf.message}")
           case Right(value)              => value
       )
 
-  private val test: Flow[Message, NotUsed, NotUsed] =
+  private val saveToDB: Flow[Message, NotUsed, NotUsed] =
     Flow[Message]
       .map { message =>
-        logger.info("Test")
+        logger.info(s"Receive message with bucketId: ${message.bucketId}")
+
+        val imageRecognitionResultMessage = message.asInstanceOf[ImageRecognitionResultMessage]
+        logger.info(s"TODO save this ${imageRecognitionResultMessage}")
         NotUsed
       }
 
-  val loggingSink: Sink[Message, ?] = Sink.foreach { message =>
-    println(s"Logging message: $message")
-    // You can add more advanced logging logic here if needed
-  }
-
-  val (consumerControl, streamComplete) = Consumer
+  private val (consumerControl, streamComplete) = Consumer
     .plainSource(consumerSettings, Subscriptions.topics("image_recognition_done"))
     .via(mapToObject)
+    .via(saveToDB)
     .recover {
       case ex: RuntimeException =>
         logger.info(s"Caught exception: ${ex.getMessage}")
         "skipped"
     }
-    .toMat(Sink.foreach(println))(Keep.both)
-    // .toMat(Sink.ignore)(Keep.both)
-    // .toMat(loggingSink)(Keep.both)
+     .toMat(Sink.ignore)(Keep.both)
     .run()
-
-
-
-//  val (consumerControl1, streamComplete1) = Consumer
-//    .plainSource(consumerSettings, Subscriptions.topics("image_recognition_done"))
-//    .toMat(Sink.ignore)(Keep.both)
-//    .run()
-//
-//  val drainingControl =
-//    Consumer
-//      .committableSource(consumerSettings.withStopTimeout(Duration.Zero), Subscriptions.topics("image_recognition_done"))
-//      .mapAsync(1) { msg =>
-//        business(msg.record).map(_ => msg.committableOffset)
-//      }
-//      .toMat(Committer.sink(committerSettings))(DrainingControl.apply)
-//      .run()
-
-
+  
   lifecycle.addStopHook { () =>
     logger.info("shutdown")
-    consumerControl.stop()
     consumerControl.shutdown()
   }

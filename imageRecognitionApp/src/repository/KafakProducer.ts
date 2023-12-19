@@ -1,6 +1,7 @@
 import {Kafka, Message, Producer, ProducerBatch, ProducerRecord, TopicMessages} from 'kafkajs'
 import {Logger} from "../utils/logger/logger";
 import * as Buffer from "buffer";
+import {DetectedObject} from "@tensorflow-models/coco-ssd";
 
 export class AnimalProtectAppMessage implements Message {
   key?: Buffer | string | null;
@@ -9,8 +10,23 @@ export class AnimalProtectAppMessage implements Message {
     this.value = value;
     this.key = key;
   }
+}
+
+export class ImageRecognitionResultMessage {
+  ImageRecognitionResultMessage: RecognitionResult;
+  constructor( detectedObject: RecognitionResult) {
+    this.ImageRecognitionResultMessage = detectedObject;
+  }
+}
 
 
+export class RecognitionResult {
+  bucketId : string
+  detectedObject: DetectedObject[];
+  constructor(bucketId: string, detectedObjects: DetectedObject[]) {
+    this.bucketId = bucketId;
+    this.detectedObject = detectedObjects;
+  }
 }
 
 const logger = Logger.getLogger("kafkaProducer");

@@ -11,8 +11,8 @@ export class ImageJob {
 
   static create(message: KafkaMessage): ImageJob {
     const data = JSON.parse(message.value.toString());
-    const bucketId = data.ImageRecognitionMessage.bucketId;
-    const imageByteArray = data.ImageRecognitionMessage.imageByteArray;
+    const bucketId = data.ImageRecognitionJobMessage.bucketId;
+    const imageByteArray = data.ImageRecognitionJobMessage.imageByteArray;
     return new ImageJob(bucketId, imageByteArray);
   }
 
