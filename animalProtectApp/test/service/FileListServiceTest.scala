@@ -10,17 +10,19 @@ import org.scalatestplus.play.PlaySpec
 import org.scalatestplus.play.guice.GuiceOneAppPerTest
 import play.api.test.Helpers.await
 import play.api.test.Injecting
+import repositories.kafka.KafkaProducerRepository
 import repositories.{GoogleBucketRepository, GoogleFireStoreRepository}
 
 import scala.concurrent.Future
 import scala.concurrent.duration.*
 
 class FileListServiceTest extends PlaySpec with GuiceOneAppPerTest with Injecting with MockitoSugar:
- // given defaultAwaitTimeout: Timeout = 2.seconds
+  // given defaultAwaitTimeout: Timeout = 2.seconds
 
   val googleBucketRepositoryMock: GoogleBucketRepository = mock[GoogleBucketRepository]
   val googleFireStoreRepositoryMock: GoogleFireStoreRepository = mock[GoogleFireStoreRepository]
-  val sut = new FileListService(googleBucketRepositoryMock, googleFireStoreRepositoryMock)
+  val kafkaProducerRepositoryMock: KafkaProducerRepository = mock[KafkaProducerRepository]
+  val sut = new FileListService(googleBucketRepositoryMock, googleFireStoreRepositoryMock, kafkaProducerRepositoryMock)
 
   "getAllItemMetadata" should {
     "find all items" in {
