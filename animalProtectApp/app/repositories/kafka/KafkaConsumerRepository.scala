@@ -48,14 +48,13 @@ class KafkaConsumerRepository @Inject() (lifecycle: ApplicationLifecycle) extend
     .plainSource(consumerSettings, Subscriptions.topics("image_recognition_done"))
     .via(mapToObject)
     .via(saveToDB)
-    .recover {
-      case ex: RuntimeException =>
-        logger.info(s"Caught exception: ${ex.getMessage}")
-        "skipped"
+    .recover { case ex: RuntimeException =>
+      logger.info(s"Caught exception: ${ex.getMessage}")
+      "skipped"
     }
-     .toMat(Sink.ignore)(Keep.both)
+    .toMat(Sink.ignore)(Keep.both)
     .run()
-  
+
   lifecycle.addStopHook { () =>
     logger.info("shutdown")
     consumerControl.shutdown()

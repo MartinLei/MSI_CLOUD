@@ -2,8 +2,8 @@ import express from "express";
 import Helmet from "helmet";
 import { Logger } from "./utils/logger/logger";
 import colors from "colors/safe";
-import {KafakConsumer} from "./repository/KafakConsumer";
-import {KafkaProducer} from "./repository/KafakProducer";
+import { KafakConsumer } from "./repository/KafakConsumer";
+import { KafkaProducer } from "./repository/KafakProducer";
 import { ExecuteImageJob } from "./services/ExecuteImageJob";
 import { ImageDetectorService } from "./services/ImageDetectorService";
 
@@ -21,9 +21,14 @@ const server = app.listen(SERVER_PORT, () => {
 
 const kafkaProducer = new KafkaProducer("localhost:9092");
 const imageDetectorService = new ImageDetectorService();
-const executeImageJob = new ExecuteImageJob(imageDetectorService, kafkaProducer);
+const executeImageJob = new ExecuteImageJob(
+  imageDetectorService,
+  kafkaProducer,
+);
 const kafkaConsumer = new KafakConsumer(
-    executeImageJob, "localhost:9092", "image_recognition_app"
+  executeImageJob,
+  "localhost:9092",
+  "image_recognition_app",
 );
 
 kafkaProducer.startProducer();
@@ -33,7 +38,7 @@ kafkaConsumer.startConsumer("image_recognition");
 let shutdownIsRunning = false;
 process.on("SIGINT", async () => {
   // Bug in node, SIGINT will be called twice if pressed CTR+C inside the terminal
-  if(shutdownIsRunning == true){
+  if (shutdownIsRunning == true) {
     return;
   }
   shutdownIsRunning = true;

@@ -15,7 +15,11 @@ export class KafakConsumer {
   private executeImageJob: ExecuteImageJob;
   private kafkaConsumer: Consumer;
 
-  public constructor(executeImageJob: ExecuteImageJob, server: string, groupId: string) {
+  public constructor(
+    executeImageJob: ExecuteImageJob,
+    server: string,
+    groupId: string,
+  ) {
     this.kafkaConsumer = this.createKafkaConsumer(server, groupId);
     this.executeImageJob = executeImageJob;
   }
@@ -28,27 +32,28 @@ export class KafakConsumer {
 
     try {
       await this.kafkaConsumer.connect();
-      logger.info("Connected to kafka")
+      logger.info("Connected to kafka");
       await this.kafkaConsumer.subscribe(topic);
-      logger.info(`Subscribed to topics '${topic.topics}'`)
+      logger.info(`Subscribed to topics '${topic.topics}'`);
 
       await this.kafkaConsumer.run({
         eachMessage: async (messagePayload: EachMessagePayload) => {
           const { topic, partition, message } = messagePayload;
           const prefix = `${topic}[${partition} | ${message.offset}] / ${message.timestamp}`;
 
-          logger.debug(`- ${prefix} KEY: ${message.key} MESSAGE LENGTH: ${message.value.length}`);
-          if(message?.key?.toString() === 'job'){
+          logger.debug(
+            `- ${prefix} KEY: ${message.key} MESSAGE LENGTH: ${message.value.length}`,
+          );
+          if (message?.key?.toString() === "job") {
             const imageJob = ImageJob.create(message);
             await this.executeImageJob.run(imageJob);
           } else {
-           logger.info(`KEY: ${message.key} unknown, ignore message`)
+            logger.info(`KEY: ${message.key} unknown, ignore message`);
           }
-
         },
       });
     } catch (error) {
-      logger.error('Error connecting the consumer: ', error)
+      logger.error("Error connecting the consumer: ", error);
     }
   }
 

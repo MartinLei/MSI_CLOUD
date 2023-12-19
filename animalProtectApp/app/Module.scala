@@ -1,12 +1,9 @@
 import com.google.inject.AbstractModule
 import repositories.kafka.KafkaConsumerRepository
 
-class Module extends AbstractModule {
+class Module extends AbstractModule:
 
-  override def configure() = {
+  override def configure() =
     // Ask Guice to create an instance of ApplicationTimer when the
     // application starts.
     bind(classOf[KafkaConsumerRepository]).asEagerSingleton()
-  }
-
-}
