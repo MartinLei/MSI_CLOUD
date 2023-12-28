@@ -1,0 +1,9 @@
+version: "3.4"
+services:
+  rtmp_server:
+    image: rtmp_server:latest
+    build: .
+    ports:
+      - "1935:1935"
+    volumes:
+      - ./files:/srv/files
