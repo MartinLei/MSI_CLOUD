@@ -1,4 +1,5 @@
-![example workflow](https://github.com/MartinLei/MSI_CLOUD/actions/workflows/qualityCheck.yml/badge.svg?branch=main)
+![animalProtectApp](https://github.com/MartinLei/MSI_CLOUD/actions/workflows/animalProtectAppAction.yml/badge.svg?branch=main)
+![imageRecognitionApp](https://github.com/MartinLei/MSI_CLOUD/actions/workflows/imageRecognitionAppAction.yml/badge.svg?branch=main)
 [![codecov](https://codecov.io/gh/MartinLei/MSI_CLOUD/graph/badge.svg?token=07VSS5XNWE)](https://codecov.io/gh/MartinLei/MSI_CLOUD)
 
 # Animal Protect
@@ -9,8 +10,10 @@ You could upload files. See all uploaded files and also download wanted files.
 
 # Run
 
-1. Start the postgresql container at /dev-tools/posgresql/ ```$ docker compose up```
-2. Run the play server with ```$ sbt run```$.
+1. Start the rtmp stream /dev/tools/rtmp_server.
+2. Start kafka ```docker compose -f zk-single-kafka-single.yml up```
+3. Run animalProtectApp core service with ```$  sbt "project animalProtectApp" "run"```$.
+4. Run imageRecognitionApp service ```$  npm run start```$.
 
 # REST API
 
