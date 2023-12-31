@@ -1,13 +1,14 @@
 package repositories
 
 import com.google.auth.oauth2.GoogleCredentials
+import com.google.cloud.secretmanager.v1.{SecretManagerServiceClient, SecretVersionName}
 import com.google.cloud.storage.{BlobId, BlobInfo, Storage, StorageOptions}
 import com.google.inject.Inject
 import com.typesafe.scalalogging.LazyLogging
 import play.api.Configuration
 import play.api.inject.ApplicationLifecycle
 
-import java.io.FileInputStream
+import java.io.{ByteArrayInputStream, FileInputStream}
 import java.nio.file.Path
 import scala.concurrent.Promise
 import scala.jdk.CollectionConverters.*
@@ -29,9 +30,14 @@ class GoogleBucketRepository @Inject() (configuration: Configuration,
   
   private val projectId: String = configuration.get[String]("google.bucket.projectId")
   private val bucketName: String = configuration.get[String]("google.bucket.bucketName")
-  private val credentialsFilePath: String = configuration.get[String]("google.bucket.credentialsFilePath")
+  private val secretId: String = configuration.get[String]("google.bucket.secretId")
+  private val versionId: String = configuration.get[String]("google.bucket.versionId")
 
-  private val credentials = GoogleCredentials.fromStream(new FileInputStream(credentialsFilePath))
+  private val secretVersionName = SecretVersionName.of(projectId, secretId, versionId)
+  private val client = SecretManagerServiceClient.create()
+  private val response = client.accessSecretVersion(secretVersionName)
+  private val payloadBytes  = response.getPayload.getData.toByteArray
+  private val credentials = GoogleCredentials.fromStream(new ByteArrayInputStream(payloadBytes))
 
   private val storage = StorageOptions
     .newBuilder()

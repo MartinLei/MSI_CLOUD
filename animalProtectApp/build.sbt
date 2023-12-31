@@ -24,3 +24,7 @@ libraryDependencies += "com.google.cloud" % "google-cloud-storage" % "2.29.0"
 
 // google firestore nosql
 libraryDependencies += "com.google.firebase" % "firebase-admin" % "9.2.0"
+
+// google secret manager
+libraryDependencies += "com.google.cloud" % "google-cloud-secretmanager" % "2.32.0"
+  

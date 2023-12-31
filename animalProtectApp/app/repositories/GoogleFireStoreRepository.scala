@@ -3,13 +3,14 @@ package repositories
 import com.google.api.core.ApiFuture
 import com.google.auth.oauth2.GoogleCredentials
 import com.google.cloud.firestore.*
+import com.google.cloud.secretmanager.v1.{SecretManagerServiceClient, SecretVersionName}
 import com.typesafe.scalalogging.LazyLogging
 import models.FileItem
 import play.api.Configuration
 import play.api.inject.ApplicationLifecycle
 import utils.asScala
 
-import java.io.FileInputStream
+import java.io.{ByteArrayInputStream, FileInputStream}
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future, Promise}
 import scala.jdk.CollectionConverters.*
@@ -35,9 +36,14 @@ class GoogleFireStoreRepository @Inject()(
 
   private val projectId: String = configuration.get[String]("google.firestore.projectId")
   private val collectionId: String = configuration.get[String]("google.firestore.collectionId")
-  private val credentialsFilePath: String = configuration.get[String]("google.firestore.credentialsFilePath")
+  private val secretId: String = configuration.get[String]("google.firestore.secretId")
+  private val versionId: String = configuration.get[String]("google.firestore.versionId")
 
-  private val credentials = GoogleCredentials.fromStream(new FileInputStream(credentialsFilePath))
+  private val secretVersionName = SecretVersionName.of(projectId, secretId, versionId)
+  private val client = SecretManagerServiceClient.create()
+  private val response = client.accessSecretVersion(secretVersionName)
+  private val payloadBytes = response.getPayload.getData.toByteArray
+  private val credentials = GoogleCredentials.fromStream(new ByteArrayInputStream(payloadBytes))
 
   private val db = FirestoreOptions
     .newBuilder()
