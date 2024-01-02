@@ -3,9 +3,13 @@ package service
 import com.typesafe.scalalogging.LazyLogging
 import org.apache.pekko.actor.*
 import org.bytedeco.javacv.*
+import repositories.kafka.KafkaProducerRepository
 import service.VideoGrabberActor.{GrabNextFrame, RetryReconnect, Shutdown}
+import utils.ImageResizer
 
+import java.awt.image.BufferedImage
 import java.io.File
+import java.nio.file.Files
 import java.util.Calendar
 import java.util.concurrent.TimeUnit
 import javax.imageio.ImageIO
@@ -14,7 +18,9 @@ import scala.concurrent.duration.{Duration, DurationInt}
 import scala.language.postfixOps
 
 object VideoGrabberActor:
-  def apply(projectId: String, streamUrl: String): Props = Props(new VideoGrabberActor(projectId, streamUrl))
+  def apply(fileListService: FileListService,
+             projectId: String,
+             streamUrl: String): Props = Props(new VideoGrabberActor(fileListService, projectId, streamUrl))
 
   case class Start()
   case class GrabNextFrame()
@@ -22,7 +28,9 @@ object VideoGrabberActor:
   case class Shutdown()
   case class RetryReconnect(retryAttempt: Int)
 
-final class VideoGrabberActor(projectId: String, streamUrl: String) extends Actor with LazyLogging:
+final class VideoGrabberActor(fileListService: FileListService,
+                              projectId: String,
+                              streamUrl: String) extends Actor with LazyLogging:
   implicit val ec: ExecutionContextExecutor = context.dispatcher
 
   private val grabber: FFmpegFrameGrabber = FFmpegFrameGrabber.createDefault(streamUrl)
@@ -51,24 +59,34 @@ final class VideoGrabberActor(projectId: String, streamUrl: String) extends Acto
       return
     }
 
-    val currentDir = new File(System.getProperty("user.dir") + "/output")
-    val converter = new Java2DFrameConverter()
-
+    var bufferedImage: BufferedImage = null
     try
       grabber.restart()
 
-      grabFrame(grabber, currentDir, converter, retryAttempt)
+      bufferedImage = grabFrame(grabber, retryAttempt)
     catch
       case e: Exception =>
         val waitSeconds: Int = Math.pow(2, retryAttempt).toInt * 10
         logger.info(s"Connection refused. wait $waitSeconds sec. [projectId: '$projectId', url: '$streamUrl']")
         val duration = Duration(waitSeconds, TimeUnit.SECONDS)
         context.system.scheduler.scheduleOnce(duration, self, RetryReconnect(retryAttempt))
+        return
+
+    if bufferedImage == null then
+      logger.info(s"No image received -> reconnect. [projectId: '$projectId', url: '$streamUrl']")
+      context.system.scheduler.scheduleOnce(1.second, self, RetryReconnect(retryAttempt))
+      return
+
+    index = index + 1
+    val filename = s"output_${index}_${Calendar.getInstance().getTime}.png"
+    val reducedBufferedImage = ImageResizer.resize(bufferedImage)
+    val tempFile = Files.createTempFile(filename, ".png")
+    ImageIO.write(reducedBufferedImage, "png", tempFile.toFile)
+    fileListService.addFileItem(projectId, filename, tempFile)
+    context.system.scheduler.scheduleOnce(1.second, self, GrabNextFrame())
 
   private def grabFrame(grabber: FFmpegFrameGrabber,
-                        currentDir: File,
-                        converter: Java2DFrameConverter,
-                        retryAttempt: Int): Unit =
+                        retryAttempt: Int): BufferedImage =
     logger.info(s"Skip frames ca. 10sec. [projectId: '$projectId', url: '$streamUrl']")
     for i <- 1 to 300 do
       grabber.grabImage()
@@ -76,15 +94,7 @@ final class VideoGrabberActor(projectId: String, streamUrl: String) extends Acto
     logger.info(s"Grab frame. [projectId: '$projectId', url: '$streamUrl']")
     val frame = grabber.grabImage()
 
-    val image = converter.getBufferedImage(frame)
-    if image != null then
-      val filename = s"output_${index}_${Calendar.getInstance().getTime}.png"
-      index = index + 1
-      logger.info(s"Save image $filename. [projectId:'$projectId', url: '$streamUrl']")
-      val outputFile = new File(currentDir, filename)
-      ImageIO.write(image, "png", outputFile)
-      context.system.scheduler.scheduleOnce(1.second, self, GrabNextFrame())
-    else
-      logger.info(s"No image received ${Calendar.getInstance().getTime} -> reconnect." +
-        s" [projectId: '$projectId', url: '$streamUrl']")
-      context.system.scheduler.scheduleOnce(1.second, self, RetryReconnect(retryAttempt))
+    val converter = new Java2DFrameConverter()
+    converter.getBufferedImage(frame)
+
+

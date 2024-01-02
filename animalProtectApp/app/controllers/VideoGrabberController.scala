@@ -11,11 +11,14 @@ import play.api.mvc.*
 import scala.concurrent.Future
 import scala.concurrent.duration.*
 import org.apache.pekko.pattern.ask
-import service.VideoGrabberActor
+import repositories.kafka.KafkaProducerRepository
+import service.{FileListService, VideoGrabberActor}
 
 import scala.collection.mutable
 @Singleton
-class VideoGrabberController @Inject()(system: ActorSystem, cc: ControllerComponents) extends AbstractController(cc) {
+class VideoGrabberController @Inject()(system: ActorSystem,
+                                       cc: ControllerComponents,
+                                       fileListService: FileListService) extends AbstractController(cc) {
 
   implicit val timeout: Timeout = 20.seconds
   implicit val ec: scala.concurrent.ExecutionContext = scala.concurrent.ExecutionContext.global
@@ -27,7 +30,10 @@ class VideoGrabberController @Inject()(system: ActorSystem, cc: ControllerCompon
       case Some(_) =>
         Future.successful(Conflict(s"A video grabber is already active for given project. [projectId: '$projectId']"))
       case None =>
-        val videoGrabberActor = system.actorOf(VideoGrabberActor(projectId, streamingUrl), "actor_" + projectId)
+        val videoGrabberActor = system.actorOf(
+          VideoGrabberActor(fileListService, projectId, streamingUrl),
+          "actor_" + projectId
+        )
         actors.put(projectId, videoGrabberActor)
         videoGrabberActor ! GrabNextFrame()
         Future.successful(Ok(s"Started video grabber. [projectId: '$projectId', streamingUrl: '$streamingUrl']"))

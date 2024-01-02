@@ -16,7 +16,7 @@ import utils.ImageHelper
 
 import java.awt.image.BufferedImage
 import java.io.{ByteArrayOutputStream, IOException}
-import java.nio.file.{Path, Paths}
+import java.nio.file.{Files, Path, Paths}
 import java.security.MessageDigest
 import javax.imageio.ImageIO
 import javax.inject.Inject
@@ -42,12 +42,19 @@ class FileListService @Inject() (
     yield FileItemsDto(itemsDto)
 
   def addFileItem(itemName: String, file: FilePart[TemporaryFile]): Unit =
-    // only get the last part of the filename
-    // otherwise someone can send a path like ../../home/foo/bar.txt to write to other files on the system
-    val fileName: String = Paths.get(file.filename).getFileName.toString
-    val contentType: String = file.contentType.getOrElse("text/plain")
     val filePath = file.ref.path
+    addFileItem("TODO", itemName, filePath)
 
+  def addFileItem(projectId: String, itemName: String, filePath: Path): Unit =
+    val fileName: String = filePath.getFileName.getFileName.toString
+    val contentType: String = Option(Files.probeContentType(filePath))
+    match {
+      case Some(contentType) => contentType
+      case None => "image/png"
+    }
+
+    logger.info(s"Save image and send to imageRecognitionApp. [projectId:'$projectId', fileName: '$fileName']")
+    
     val bucketItemId = MessageDigest
       .getInstance("SHA-256")
       .digest(System.nanoTime().toString.getBytes ++ fileName.getBytes("UTF-8"))
@@ -97,3 +104,8 @@ class FileListService @Inject() (
   def deleteAll(): Unit =
     googleBucketRepository.deleteAll()
     googleFireStoreRepository.deleteAll()
+
+
+  def saveImageRecognition(bucketId: String, detectedObject: Array[DetectedObject]): Unit =
+    logger.info(s"TODO save this ${bucketId} + ${detectedObject.mkString("Array(", ", ", ")")}")
+
