@@ -1,5 +1,4 @@
 import com.google.inject.AbstractModule
-import controllers.{ConfiguredChildActor, ParentActor}
 import play.api.libs.concurrent.PekkoGuiceSupport
 import repositories.kafka.KafkaConsumerRepository
 

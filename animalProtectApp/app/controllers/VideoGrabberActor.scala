@@ -3,7 +3,6 @@ package controllers
 import com.typesafe.scalalogging.LazyLogging
 import controllers.VideoGrabberActor.{GrabNextFrame, RetryReconnect, Shutdown}
 import org.apache.pekko.actor.*
-import repositories.RTMPGrabber
 import org.bytedeco.javacv.FFmpegFrameGrabber
 
 import java.io.File
