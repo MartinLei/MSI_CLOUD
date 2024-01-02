@@ -25,7 +25,7 @@ object VideoGrabberActor:
 final class VideoGrabberActor(projectId: String, streamUrl: String) extends Actor with LazyLogging:
   implicit val ec: ExecutionContextExecutor = context.dispatcher
 
-  val grabber: FFmpegFrameGrabber = FFmpegFrameGrabber.createDefault(streamUrl)
+  private val grabber: FFmpegFrameGrabber = FFmpegFrameGrabber.createDefault(streamUrl)
   FFmpegFrameGrabber.tryLoad()
 
   var index: Int = 0 // TODO remove
@@ -42,10 +42,7 @@ final class VideoGrabberActor(projectId: String, streamUrl: String) extends Acto
     case RetryReconnect(retryAttempt) =>
       logger.info(s"Retry reconnect grabber. " +
         s"[projectId: '$projectId', url: '$streamUrl', retryAttempt: '$retryAttempt']")
-      if retryAttempt == 5 then
-        logger.info(s"Could not reconnect after $retryAttempt attempts -> stop. " +
-          s"[projectId: '$projectId', url: '$streamUrl', retryAttempt: '$retryAttempt']")
-      else run(streamUrl, retryAttempt + 1)
+      run(streamUrl, retryAttempt + 1)
   }
 
   def run(rtmpStreamURL: String, retryAttempt: Int): Unit =
