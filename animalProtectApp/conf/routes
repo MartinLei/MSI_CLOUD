@@ -26,3 +26,11 @@ POST   /delete/:id                  controllers.FileListController.delete(id: St
 
 # delete all saved fileItem with given id - http://localhost:9000/deleteAll
 GET   /deleteAll                  controllers.FileListController.deleteAll()
+
+# start grabbing on vido stream
+# http://localhost:9000/startGrabbing?streamingUrl=rtmp://localhost/live"&projectId=testProject
+GET     /startGrabbing                   controllers.VideoGrabberController.startGrabbing(projectId: String, streamingUrl: String)
+
+# stop grabbing on vido stream
+# http://localhost:9000/stopGrabbing?projectId=testProject
+GET     /stopGrabbing                    controllers.VideoGrabberController.stopGrabbing(projectId: String)

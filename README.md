@@ -54,7 +54,7 @@ Use ```$ sbt scalafmt``` to automatically format all files.
 
 ## Debugging
 
-Run server with ```sbt run -jvm-debug 5005``` and connect via remote debugger.
+Run server with ```sbt -jvm-debug 5005``` and connect via remote debugger.
 
 ### Tutorials for scala and play with slick
 
