@@ -72,20 +72,6 @@ class FileListService @Inject() (
     val message = ImageRecognitionJobMessage(bucketItemId, ImageHelper.readImageFromPath(path, contentType))
     kafkaProducerRepository.sendToImageRecognitionApp(message)
 
-//    val meWhole : String= """{"ImageRecognitionResultMessage":{"bucketId":"402718B588EBBEAD89E24BF5A0BE7AC6E085B6B82D294FD2D6E5659398B0D1B6","detectedObject":[{"bbox":[391.58880615234375,66.13458108901978,614.579345703125,532.4546041488647],"class":"dog","score":0.9556354880332947},{"bbox":[7.6615447998046875,16.496836066246033,325.2234649658203,530.635656952858],"class":"dog","score":0.8764094710350037},{"bbox":[541.8712158203125,-0.16977345943450928,187.919921875,172.703866481781],"class":"person","score":0.5290907025337219}]}}"""
-//    val me: String = """   {"ImageRecognitionResultMessage":{"bucketId":"bId","detectedObject":[{"bbox":[1.2,1.3],"class":"test","score":1.3}]}}"""
-//
-//    val b = ImageRecognitionResultMessage("bId",Array(DetectedObject(Array(1.2,1.3),"test", 1.3))).asInstanceOf[Message]
-//    val json = b.asJson.noSpaces
-//    logger.info(s"TEST $json")
-//    val obj = decode[Message](meWhole) match
-//      case Left(df: DecodingFailure) => throw new IllegalArgumentException(s"Error:${df.message}")
-//      case Left(pf: ParsingFailure)  => throw new IllegalArgumentException(s"Error:${pf.message}")
-//      case Right(value)              => value
-//
-//
-//    logger.info(obj.toString)
-
   def getFileItem(documentId: String): Future[Option[FileItem]] =
     googleFireStoreRepository.findById(documentId)
 
