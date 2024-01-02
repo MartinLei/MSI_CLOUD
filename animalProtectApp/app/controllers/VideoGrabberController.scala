@@ -1,7 +1,7 @@
 package controllers
 
 
-import controllers.VideoGrabberActor.{GrabNextFrame, Shutdown}
+import service.VideoGrabberActor.{GrabNextFrame, Shutdown}
 
 import javax.inject.*
 import org.apache.pekko.actor.*
@@ -11,6 +11,7 @@ import play.api.mvc.*
 import scala.concurrent.Future
 import scala.concurrent.duration.*
 import org.apache.pekko.pattern.ask
+import service.VideoGrabberActor
 
 import scala.collection.mutable
 @Singleton

@@ -1,22 +1,17 @@
-package controllers
+package service
 
 import com.typesafe.scalalogging.LazyLogging
-import controllers.VideoGrabberActor.{GrabNextFrame, RetryReconnect, Shutdown}
 import org.apache.pekko.actor.*
-import org.bytedeco.javacv.FFmpegFrameGrabber
-
-import java.io.File
-import java.util.Calendar
-import java.io.File
-import java.util.Calendar
-import javax.imageio.ImageIO
-import scala.language.postfixOps
 import org.bytedeco.javacv.*
+import service.VideoGrabberActor.{GrabNextFrame, RetryReconnect, Shutdown}
 
-import concurrent.duration.DurationInt
+import java.io.File
+import java.util.Calendar
 import java.util.concurrent.TimeUnit
-import scala.concurrent.{ExecutionContext, ExecutionContextExecutor}
-import scala.concurrent.duration.{Duration, MILLISECONDS}
+import javax.imageio.ImageIO
+import scala.concurrent.ExecutionContextExecutor
+import scala.concurrent.duration.{Duration, DurationInt}
+import scala.language.postfixOps
 
 object VideoGrabberActor:
   def apply(projectId: String, streamUrl: String): Props = Props(new VideoGrabberActor(projectId, streamUrl))
