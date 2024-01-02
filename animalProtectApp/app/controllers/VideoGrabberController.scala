@@ -36,11 +36,11 @@ class VideoGrabberController @Inject()(system: ActorSystem, cc: ControllerCompon
   def stopGrabbing(projectId: String): Action[AnyContent] = Action.async {
     actors.get(projectId) match {
       case Some(actorRef) =>
-        val stopped: Future[Any] = actorRef ? Shutdown()
-        stopped.onComplete(_ => actors.remove(projectId))
-        stopped.map(_ => Ok(s"Video grabber for given projectId was stopped. [projectId: '$projectId'"))
+        actorRef ! Shutdown()
+        actors.remove(projectId)
+        Future.successful(Ok(s"Video grabber for given projectId was stopped. [projectId: '$projectId']"))
       case None =>
-        Future.successful(NotFound(s"No video grabber for given projectId was found. [projectId: '$projectId'"))
+        Future.successful(NotFound(s"No video grabber for given projectId was found. [projectId: '$projectId']"))
     }
   }
 }

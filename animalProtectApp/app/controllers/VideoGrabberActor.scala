@@ -41,14 +41,16 @@ final class VideoGrabberActor(projectId: String, streamUrl: String) extends Acto
       logger.info(s"Grab next frame. [projectId: '$projectId', url: '$streamUrl']")
       run(streamUrl, 0)
     case Shutdown() =>
-      logger.info(s"Stop grabbing. [projectId: '$projectId', url: '$streamUrl']")
+      logger.info(s"Stop grabbing for given projectId. [projectId: '$projectId', url: '$streamUrl']")
       grabber.stop()
       shutdown = true
       context.stop(self)
     case RetryReconnect(retryAttempt) =>
-      logger.info(s"Retry reconnect grabber. [projectId: '$projectId', url: '$streamUrl', retryAttempt: '$retryAttempt']")
-      //grabber.restart()
-      if retryAttempt == 5 then logger.info(s"Could not reconnect after $retryAttempt -> stop. [projectId: '$projectId', url: '$streamUrl', retryAttempt: '$retryAttempt']")
+      logger.info(s"Retry reconnect grabber. " +
+        s"[projectId: '$projectId', url: '$streamUrl', retryAttempt: '$retryAttempt']")
+      if retryAttempt == 5 then
+        logger.info(s"Could not reconnect after $retryAttempt attempts -> stop. " +
+          s"[projectId: '$projectId', url: '$streamUrl', retryAttempt: '$retryAttempt']")
       else run(streamUrl, retryAttempt + 1)
   }
 
@@ -72,7 +74,10 @@ final class VideoGrabberActor(projectId: String, streamUrl: String) extends Acto
         val duration = Duration(waitSeconds, TimeUnit.SECONDS)
         context.system.scheduler.scheduleOnce(duration, self, RetryReconnect(retryAttempt))
 
-  private def grabFrame(grabber: FFmpegFrameGrabber, currentDir: File, converter: Java2DFrameConverter, retryAttempt: Int): Unit =
+  private def grabFrame(grabber: FFmpegFrameGrabber,
+                        currentDir: File,
+                        converter: Java2DFrameConverter,
+                        retryAttempt: Int): Unit =
     logger.info(s"Skip frames ca. 10sec. [projectId: '$projectId', url: '$streamUrl']")
     for i <- 1 to 300 do
       grabber.grabImage()
