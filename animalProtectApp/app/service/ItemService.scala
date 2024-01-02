@@ -47,21 +47,21 @@ class ItemService @Inject()(
 
     logger.info(s"Save image and send to imageRecognitionApp. [projectId:'$projectId', fileName: '$fileName']")
 
-    val imageId = MessageDigest
+    val bucketId = MessageDigest
       .getInstance("SHA-256")
       .digest(System.nanoTime().toString.getBytes ++ fileName.getBytes("UTF-8"))
       .map("%02X".format(_))
       .mkString
 
     // save image
-    googleBucketRepository.upload(projectId, imageId, path)
+    googleBucketRepository.upload(projectId, bucketId, path)
 
     // save meta data
-    val newItem = new Item("-", fileName, contentType, imageId)
+    val newItem = new Item("-", fileName, contentType, bucketId)
     googleFireStoreRepository.save(projectId, newItem)
 
-    // give image recognition app a job
-    val message = ImageRecognitionJobMessage(imageId, ImageHelper.readImageFromPath(path, contentType))
+    // send imageRecognitionApp analyse job
+    val message = ImageRecognitionJobMessage(projectId, bucketId, ImageHelper.readImageFromPath(path, contentType))
     kafkaProducerRepository.sendToImageRecognitionApp(message)
 
   def getItem(projectId: String, itemId: String): Future[Option[Item]] =
@@ -85,4 +85,5 @@ class ItemService @Inject()(
     googleFireStoreRepository.deleteAll(projectId)
 
   def saveImageRecognition(bucketId: String, detectedObject: Array[DetectedObject]): Unit =
+    googleFireStoreRepository.findById()
     logger.info(s"TODO save this ${bucketId} + ${detectedObject.mkString("Array(", ", ", ")")}")

@@ -1,13 +1,11 @@
 import { ImageJob } from "../modle/ImageJob";
 import { Logger } from "../utils/logger/logger";
 import { ImageDetectorService } from "./ImageDetectorService";
-import {
-  AnimalProtectAppMessage,
-  ImageRecognitionResultMessage,
-  KafkaProducer,
-  RecognitionResult,
-} from "../repository/KafakProducer";
+import {KafkaProducer} from "../repository/KafakProducer";
 import { DetectedObject } from "@tensorflow-models/coco-ssd";
+import {ImageRecognitionResultMessage} from "../modle/ImageRecognitionResultMessage";
+import {RecognitionResult} from "../modle/RecognitionResult";
+import {AnimalProtectAppMessage} from "../modle/AnimalProtectAppMessage";
 
 const logger = Logger.getLogger("ExecuteImageJob");
 
