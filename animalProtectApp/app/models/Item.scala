@@ -1,32 +1,40 @@
 package models
 
-import play.api.libs.json.{Format, Json}
-
+import repositories.kafka.model.DetectedObject
+import io.circe
+import io.circe.*
+import io.circe.syntax.*
+import io.circe.generic.auto.*
+import io.circe.parser.*
 import scala.beans.BeanProperty
 
 case class ItemDto(id: String, fileName: String, contentType: String)
 
 object ItemDto:
-  implicit val format: Format[ItemDto] = Json.format[ItemDto]
-
-  def from(fileItem: Item): ItemDto = ItemDto(
-    id = fileItem.id,
-    fileName = fileItem.fileName,
-    contentType = fileItem.contentType
+  def from(item: Item): ItemDto = ItemDto(
+    id = item.id,
+    fileName = item.name,
+    contentType = item.contentType
   )
 
 /** Using @BeanProperty for creating java getter and setter.
   */
 case class Item(
-    @BeanProperty var id: String,
-    @BeanProperty var fileName: String,
-    @BeanProperty var contentType: String,
-    @BeanProperty var bucketItemId: String
+                 @BeanProperty var id: String,
+                 @BeanProperty var name: String,
+                 @BeanProperty var contentType: String,
+                 @BeanProperty var bucketId: String,
+                 @BeanProperty var detectedObjectSerialized: String
+
 ):
-  def this() = this("", "", "", "")
+  def this() = this("", "", "", "", "")
+
+  def detectedObject : Option[DetectedObject] = decode[DetectedObject](this.detectedObjectSerialized) match
+    case Left(df: DecodingFailure) => None
+    case Left(pf: ParsingFailure) => None
+    case Right(value) => Some(value)
 
 object Item:
-  implicit val format: Format[Item] = Json.format[Item]
+  def apply(id: String, item: Item): Item =
+    Item(id, item.name, item.contentType, item.bucketId, item.detectedObjectSerialized)
 
-  def apply(id: String, fileItem: Item): Item =
-    Item(id, fileItem.fileName, fileItem.contentType, fileItem.bucketItemId)

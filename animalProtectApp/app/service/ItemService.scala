@@ -3,6 +3,9 @@ package service
 import com.typesafe.scalalogging.LazyLogging
 import io.circe
 import io.circe.*
+import io.circe.syntax.*
+import io.circe.generic.auto.*
+import io.circe.parser.*
 import models.{Item, ItemDto, ItemsDto}
 import play.api.libs.Files.TemporaryFile
 import play.api.mvc.MultipartFormData.*
@@ -10,14 +13,14 @@ import repositories.kafka.KafkaProducerRepository
 import repositories.kafka.model.{DetectedObject, ImageRecognitionJobMessage}
 import repositories.{GoogleBucketRepository, GoogleFireStoreRepository}
 import utils.{ImageHelper, ImageResizer}
-
+import scala.concurrent.duration.*
 import java.nio.file.{Files, Path}
 import java.security.MessageDigest
 import javax.inject.Inject
 import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.Future
+import scala.concurrent.{Await, Future}
 
-class ItemService @Inject()(
+class ItemService @Inject() (
     googleBucketRepository: GoogleBucketRepository,
     googleFireStoreRepository: GoogleFireStoreRepository,
     kafkaProducerRepository: KafkaProducerRepository
@@ -52,12 +55,13 @@ class ItemService @Inject()(
       .digest(System.nanoTime().toString.getBytes ++ fileName.getBytes("UTF-8"))
       .map("%02X".format(_))
       .mkString
+      .take(10)
 
     // save image
     googleBucketRepository.upload(projectId, bucketId, path)
 
     // save meta data
-    val newItem = new Item("-", fileName, contentType, bucketId)
+    val newItem = new Item("auto_add", fileName, contentType, bucketId, "")
     googleFireStoreRepository.save(projectId, newItem)
 
     // send imageRecognitionApp analyse job
@@ -71,8 +75,8 @@ class ItemService @Inject()(
     for
       maybeFileItem <- googleFireStoreRepository.findById(projectId, itemId)
       result <- maybeFileItem match
-        case None => Future.failed(new IllegalArgumentException(
-          s"No item found. [projectId: '$projectId', itemId: '$itemId']"))
+        case None =>
+          Future.failed(new IllegalArgumentException(s"No item found. [projectId: '$projectId', itemId: '$itemId']"))
         case Some(_) =>
           googleBucketRepository.delete(projectId, itemId)
           googleFireStoreRepository
@@ -80,10 +84,23 @@ class ItemService @Inject()(
             .map(_ => Some(itemId))
     yield result
 
-  def deleteProject(projectId : String): Unit =
+  def deleteProject(projectId: String): Unit =
     googleBucketRepository.deleteAll(projectId)
     googleFireStoreRepository.deleteAll(projectId)
 
-  def saveImageRecognition(bucketId: String, detectedObject: Array[DetectedObject]): Unit =
-    googleFireStoreRepository.findById()
-    logger.info(s"TODO save this ${bucketId} + ${detectedObject.mkString("Array(", ", ", ")")}")
+  def saveImageRecognition(projectId: String, bucketId: String, detectedObject: List[DetectedObject]): Unit =
+    val item = googleFireStoreRepository.findByBucketId(projectId, bucketId)
+    val documentId = Await.result(item, 2.seconds)
+
+    documentId.map(_.id) match
+      case None  => logger.info(s"Could not find bucketId to update detectedObjects. " +
+        s"[projectId: '$projectId', bucketId: '$bucketId']")
+      case Some(id) => {
+        val detectedObjectSerialized = detectedObject.asJson.noSpaces
+        try
+          val updatedItem = googleFireStoreRepository
+            .updateField_detectedObjectSerialized(projectId, id, detectedObjectSerialized)
+          Await.result(updatedItem, 2.seconds)
+        catch case e: Exception => logger.info(e.getMessage)
+        logger.info(s"Update item with detectedObjects. [projectId: '$projectId', bucketId: '$bucketId']")
+      }

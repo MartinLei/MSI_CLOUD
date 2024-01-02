@@ -23,8 +23,9 @@ val dependencies = Seq(
   "io.circe" %% "circe-core" % "0.15.0-M1",
   "io.circe" %% "circe-generic" % "0.15.0-M1",
   "io.circe" %% "circe-parser" % "0.15.0-M1",
-
-   "org.bytedeco" % "javacv" % "1.5.9",
+  "com.dripower" %% "play-circe" % "3014.1",
+  // opencv
+  "org.bytedeco" % "javacv" % "1.5.9",
   "org.bytedeco" % "javacv-platform" % "1.5.9"
 
 )

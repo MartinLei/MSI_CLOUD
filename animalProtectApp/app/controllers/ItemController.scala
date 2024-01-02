@@ -1,9 +1,11 @@
 package controllers
 import play.api.libs.Files
-import play.api.libs.json.Json
 import play.api.mvc.*
 import repositories.GoogleBucketRepository
 import service.ItemService
+import io.circe.generic.auto.*
+import io.circe.syntax.*
+import play.api.libs.circe.Circe
 
 import javax.inject.Inject
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -14,7 +16,7 @@ class ItemController @Inject()(
                                      val controllerComponents: ControllerComponents,
                                      val itemService: ItemService,
                                      val googleBucketRepository: GoogleBucketRepository
-) extends BaseController:
+) extends BaseController with Circe :
 
   def index(): Action[AnyContent] = Action { implicit request: Request[AnyContent] =>
     Ok(views.html.index())
@@ -22,22 +24,22 @@ class ItemController @Inject()(
 
   def getAllItemMetadata(projectId: String): Action[AnyContent] = Action.async { implicit request =>
     itemService.getAllItemMetadata(projectId).map { item =>
-      Ok(Json.toJson(item))
+      Ok(item.asJson)
     }
   }
 
   def search(projectId: String, fileName: String): Action[AnyContent] = Action.async { implicit request =>
     itemService.search(projectId, fileName).map { item =>
-      Ok(Json.toJson(item))
+      Ok(item.asJson)
     }
   }
 
   def download(projectId: String, itemId: String): Action[AnyContent] = Action.async { request =>
     itemService.getItem(projectId, itemId).map {
       case Some(item) =>
-        Ok(googleBucketRepository.download(projectId, item.bucketItemId))
+        Ok(googleBucketRepository.download(projectId, item.bucketId))
           .as(item.contentType)
-          .withHeaders("Content-Disposition" -> s"attachment; filename=${item.fileName}")
+          .withHeaders("Content-Disposition" -> s"attachment; filename=${item.name}")
       case None =>
         NotFound("File not found")
     }

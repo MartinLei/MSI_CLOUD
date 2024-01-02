@@ -39,8 +39,8 @@ class KafkaConsumerRepository @Inject() (lifecycle: ApplicationLifecycle, itemSe
   private val saveToDB: Flow[Message, NotUsed, NotUsed] =
     Flow[Message].map {
       case message: ImageRecognitionResultMessage =>
-        logger.info(s"Receive message with bucketId: ${message.bucketId}")
-        itemService.saveImageRecognition(message.bucketId, message.detectedObject)
+        logger.info(s"Receive imageRecognitionResult message with bucketId: ${message.bucketId}")
+        itemService.saveImageRecognition(message.projectId,message.bucketId, message.detectedObject)
         NotUsed
       case _ =>
         logger.info("Received unknown message type")

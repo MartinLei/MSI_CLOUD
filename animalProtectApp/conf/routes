@@ -8,8 +8,8 @@ GET     /assets/*file               controllers.Assets.versioned(path="/public",
 GET     /                           controllers.ItemController.index()
 
 # show all file for given project
-# http://localhost:9000/files?projectId=testProject
-GET     /files                      controllers.ItemController.getAllItemMetadata(projectId: String)
+# http://localhost:9000/items?projectId=testProject
+GET     /items                      controllers.ItemController.getAllItemMetadata(projectId: String)
 
 # search for a name
 # http://localhost:9000/search?projectId=testProject&name=Test

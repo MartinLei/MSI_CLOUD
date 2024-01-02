@@ -21,7 +21,7 @@ export class ImageDetectorService {
     bucketId: string,
     imageBuffer: Buffer,
   ): Promise<cocoSsd.DetectedObject[]> {
-    logger.info(`-- Start analyse image with bucketId: "${bucketId}" --`);
+    logger.info(`-- Start analyse image. [bucketId: '${bucketId}']`);
     const startTime1 = performance.now();
     const imageTensor = tf.node.decodeImage(imageBuffer);
     const startTime2 = performance.now();
@@ -41,9 +41,7 @@ export class ImageDetectorService {
     logger.info(`Load model: ${Math.floor(totalTime2)} ms`);
     logger.info(`Analyse: ${Math.floor(totalTime3)} ms`);
     logger.info(
-      `-- Finish analyse image with bucketId "${bucketId}" in ${Math.floor(
-        totalTime4,
-      )} ms --`,
+      `-- Finish analyse image. [bucketId: '${bucketId}', time: '${Math.floor(totalTime4,)}ms']`,
     );
 
     return predictions;

@@ -21,23 +21,21 @@ export class ExecuteImageJob {
   }
 
   async run(imageJob: ImageJob) {
-    logger.info(`Start execute imageJob for bucketId: ${imageJob.bucketId}`);
+    logger.info(`Start execute imageJob. [projectId: '${imageJob.projectId}', bucketId: '${imageJob.bucketId}']`);
 
     const detectedObjects =
       await this.imageDetectorService.analyseImage(imageJob);
 
-    const messageValue = this.convertToJson(imageJob.bucketId, detectedObjects);
+    const messageValue = this.convertToJson(imageJob.projectId, imageJob.bucketId, detectedObjects);
     const message = new AnimalProtectAppMessage("job_done", messageValue);
     logger.info(
-      `Send message on topic image_recognition_done for buckedId ${imageJob.bucketId}`,
+      `Send message of topic image_recognition_done. [projectId: '${imageJob.projectId}', bucketId: '${imageJob.bucketId}']`,
     );
     await this.kafkaProducer.send("image_recognition_done", message);
-
-    logger.info(`Finish execute imageJob for bucketId: ${imageJob.bucketId}`);
   }
 
-  private convertToJson(bucketId: string, detectedObjects: DetectedObject[]) {
-    const recognitionResult = new RecognitionResult(bucketId, detectedObjects);
+  private convertToJson(projectId: string, bucketId: string, detectedObjects: DetectedObject[]) {
+    const recognitionResult = new RecognitionResult(projectId, bucketId, detectedObjects);
     const imageRecognitionResultMessage = new ImageRecognitionResultMessage(
       recognitionResult,
     );
