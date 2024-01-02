@@ -31,49 +31,49 @@ class GoogleFireStoreRepository @Inject() (configuration: Configuration, lifecyc
     promise.future
   }
 
-  private val projectId: String = configuration.get[String]("google.firestore.projectId")
-  private val collectionId: String = configuration.get[String]("google.firestore.collectionId")
-  private val credentialsFilePath: String = configuration.get[String]("google.firestore.credentialsFilePath")
+  private val googleProjectId: String = configuration.get[String]("google.firestore.projectId")
+  private val googleCredentialsFilePath: String = configuration.get[String]("google.firestore.credentialsFilePath")
 
-  private val credentials = GoogleCredentials.fromStream(new FileInputStream(credentialsFilePath))
+  private val credentials = GoogleCredentials.fromStream(new FileInputStream(googleCredentialsFilePath))
 
   private val db = FirestoreOptions
     .newBuilder()
-    .setProjectId(projectId)
+    .setProjectId(googleProjectId)
     .setCredentials(credentials)
     .build
     .getService
 
-  def save(fileItem: FileItem): Future[Int] =
-    db.collection(collectionId)
+  def save(projectId: String, fileItem: FileItem): Future[Int] =
+    logger.info(s"Upload metadate to firestore.  [projectId: '$projectId']")
+    db.collection(projectId)
       .add(fileItem)
       .asScala
       .map(documentReference => documentReference.getId.toInt)
 
-  def findAll: Future[Seq[FileItem]] =
-    db.collection(collectionId)
+  def findAll(projectId: String): Future[Seq[FileItem]] =
+    db.collection(projectId)
       .get()
       .asScala
       .map(querySnapshot => querySnapshot.getDocuments.asScala.toSeq)
       .map(seqQuerySnapshot => seqQuerySnapshot.map(toFileItem))
 
-  def findById(documentId: String): Future[Option[FileItem]] =
-    db.collection(collectionId)
+  def findById(projectId: String, documentId: String): Future[Option[FileItem]] =
+    db.collection(projectId)
       .document(documentId)
       .get()
       .asScala
       .map(queryDocumentSnapshot => Some(queryDocumentSnapshot.toObject(classOf[FileItem])))
 
-  def search(name: String): Future[Seq[FileItem]] =
-    db.collection(collectionId)
-      .where(Filter.or(Filter.equalTo("itemName", name), Filter.equalTo("fielName", name)))
+  def search(projectId : String, fileName: String): Future[Seq[FileItem]] =
+    db.collection(projectId)
+      .where(Filter.or(Filter.equalTo("itemName", fileName), Filter.equalTo("fileName", fileName)))
       .get()
       .asScala
       .map(querySnapshot => querySnapshot.getDocuments.asScala.toSeq)
       .map(seqQuerySnapshot => seqQuerySnapshot.map(toFileItem))
 
-  def delete(documentId: String): Future[String] =
-    db.collection(collectionId)
+  def delete(projectId : String, documentId: String): Future[String] =
+    db.collection(projectId)
       .document(documentId)
       .delete()
       .asScala
@@ -81,9 +81,9 @@ class GoogleFireStoreRepository @Inject() (configuration: Configuration, lifecyc
 
   /** Only used for debugging purpose. For deleting all files in the bucket.
     */
-  def deleteAll(): Unit =
+  def deleteAll(projectId : String): Unit =
     val batch = db.batch()
-    val documents = db.collection(collectionId).get().get().asScala
+    val documents = db.collection(projectId).get().get().asScala
     documents
       .foreach(document => batch.delete(document.getReference))
 
@@ -92,7 +92,7 @@ class GoogleFireStoreRepository @Inject() (configuration: Configuration, lifecyc
       return
 
     batch.commit()
-    logger.info(s"Delete all ${documents.size} entries in fileStore of collection $collectionId")
+    logger.info(s"Delete all ${documents.size} entries in fileStore of collection $projectId")
 
   def toFileItem: QueryDocumentSnapshot => FileItem =
     queryDocumentSnapshot =>

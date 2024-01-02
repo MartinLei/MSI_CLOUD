@@ -65,7 +65,7 @@ class FileListControllerTest extends PlaySpec with GuiceOneAppPerTest with Injec
       val fileData = Array[Byte](1)
       when(googleBucketRepositoryMock.download(any())).thenReturn(fileData)
       // execute
-      val result = sut.downloadFile("1").apply(FakeRequest(GET, "/download/1"))
+      val result = sut.download("1").apply(FakeRequest(GET, "/download/1"))
 
       // verify
       status(result) mustBe OK
@@ -79,7 +79,7 @@ class FileListControllerTest extends PlaySpec with GuiceOneAppPerTest with Injec
       when(fileListServiceMock.getFileItem("1")).thenReturn(Future.successful(None))
 
       // execute
-      val result = sut.downloadFile("1").apply(FakeRequest(GET, "/download/1"))
+      val result = sut.download("1").apply(FakeRequest(GET, "/download/1"))
 
       // verify
       status(result) mustBe NOT_FOUND

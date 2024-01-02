@@ -7,11 +7,13 @@ GET     /assets/*file               controllers.Assets.versioned(path="/public",
 
 GET     /                           controllers.FileListController.index()
 
-# show all given items - http://localhost:9000/files
-GET     /files                      controllers.FileListController.getAllItemMetadata()
+# show all file for given project
+# http://localhost:9000/files?projectId=testProject
+GET     /files                      controllers.FileListController.getAllItemMetadata(projectId: String)
 
-# search for a name - http://localhost:9000/search?name=Test
-GET    /search                      controllers.FileListController.search(name: String)
+# search for a name
+# http://localhost:9000/search?projectId=testProject&name=Test
+GET    /search                      controllers.FileListController.search(projectId: String, name: String)
 
 # upload file with a name.
 # http://localhost:9000/upload?projectId=testProject
@@ -19,11 +21,13 @@ GET    /search                      controllers.FileListController.search(name: 
 + nocsrf
 POST   /upload                      controllers.FileListController.upload(projectId: String)
 
-# download file with given id - http://localhost:9000/download/2
-GET    /download/:id                controllers.FileListController.downloadFile(id: String)
+# download file with given id
+# http://localhost:9000/download?projectId=testProject&fileId=TEST
+GET    /download                controllers.FileListController.download(projectId : String, documentId: String)
 
-# delete file with given id - http://localhost:9000/delete/2
-POST   /delete/:id                  controllers.FileListController.delete(id: String)
+# delete file for given project with fileId
+# http://localhost:9000/delete?projectId=testProject&documentId=TEST
+POST   /delete/                 controllers.FileListController.delete(projectId : String, documentId: String)
 
 # delete all saved fileItem with given id - http://localhost:9000/deleteAll
 GET   /deleteAll                  controllers.FileListController.deleteAll()

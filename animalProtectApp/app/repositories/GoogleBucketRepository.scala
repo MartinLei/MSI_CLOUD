@@ -26,56 +26,59 @@ class GoogleBucketRepository @Inject() (configuration: Configuration, lifecycle:
     promise.future
   }
 
-  private val projectId: String = configuration.get[String]("google.bucket.projectId")
-  private val bucketName: String = configuration.get[String]("google.bucket.bucketName")
-  private val credentialsFilePath: String = configuration.get[String]("google.bucket.credentialsFilePath")
+  private val googleProjectId: String = configuration.get[String]("google.bucket.projectId")
+  private val googleBucketName: String = configuration.get[String]("google.bucket.bucketName")
+  private val googleCredentialsFilePath: String = configuration.get[String]("google.bucket.credentialsFilePath")
 
-  private val credentials = GoogleCredentials.fromStream(new FileInputStream(credentialsFilePath))
+  private val credentials = GoogleCredentials.fromStream(new FileInputStream(googleCredentialsFilePath))
 
   private val storage = StorageOptions
     .newBuilder()
-    .setProjectId(projectId)
+    .setProjectId(googleProjectId)
     .setCredentials(credentials)
     .build()
     .getService
 
-  private val prefixFileName: String = "file_"
-  def upload(filePath: Path, fileName: String): Unit =
+  private def getBlobId(projectId: String, fileId: String): BlobId =
+    val fullIdentifier = projectId + "/" + fileId
+    BlobId.of(googleBucketName, fullIdentifier)
 
-    val blobId = BlobId.of(bucketName, prefixFileName + fileName)
+  def upload(projectId: String, fileId: String, path: Path): Unit =
+
+    val blobId = getBlobId(projectId, fileId)
     val blobInfo = BlobInfo.newBuilder(blobId).build()
 
     // Optional: set a generation-match precondition to avoid potential race
     // conditions and data corruptions. The request returns a 412 error if the
     // preconditions are not met.
-    val precondition = Option(storage.get(bucketName, fileName)) match
+    val precondition = Option(storage.get(googleBucketName, fileId)) match
       case Some(_) =>
         // If the destination already exists in your bucket, instead set a generation-match
         // precondition. This will cause the request to fail if the existing object's generation
         // changes before the request runs.
-        Storage.BlobWriteOption.generationMatch(storage.get(bucketName, fileName).getGeneration)
+        Storage.BlobWriteOption.generationMatch(storage.get(googleBucketName, fileId).getGeneration)
       case None =>
         // For a target object that does not yet exist, set the DoesNotExist precondition.
         // This will cause the request to fail if the object is created before the request runs.
         Storage.BlobWriteOption.doesNotExist()
 
-    storage.createFrom(blobInfo, filePath, precondition)
-    logger.info(s"Upload file $filePath to bucket as $fileName")
+    storage.createFrom(blobInfo, path, precondition)
+    logger.info(s"Upload file to bucket.  [projectId: '$projectId', fileId: '$fileId']")
 
-  def download(bucketItemId: String): Array[Byte] =
-    val blobId = BlobId.of(bucketName, prefixFileName + bucketItemId)
+  def download(projectId: String, fileId: String): Array[Byte] =
+    val blobId = getBlobId(projectId, fileId)
     storage.readAllBytes(blobId)
 
-  def delete(fileName: String): Boolean =
-    val blobId = BlobId.of(bucketName, prefixFileName + fileName)
+  def delete(projectId: String, fileId: String): Boolean =
+    val blobId = getBlobId(projectId, fileId)
     storage.delete(blobId)
 
   /** Only used for debugging purpose. For deleting all files in the bucket.
     */
-  def deleteAll(): Unit =
+  def deleteAll(projectId : String): Unit =
     val batch = storage.batch
     val blobs = storage
-      .list(bucketName, Storage.BlobListOption.currentDirectory, Storage.BlobListOption.prefix(prefixFileName))
+      .list(googleBucketName, Storage.BlobListOption.currentDirectory, Storage.BlobListOption.prefix(projectId))
       .iterateAll
       .asScala
 
@@ -85,4 +88,4 @@ class GoogleBucketRepository @Inject() (configuration: Configuration, lifecycle:
 
     for blob <- blobs do batch.delete(blob.getBlobId)
     batch.submit()
-    logger.info(s"Delete all files in bucket with prefix name $prefixFileName")
+    logger.info(s"Delete all files in bucket with prefix name $projectId")

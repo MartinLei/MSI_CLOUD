@@ -20,33 +20,33 @@ class FileListController @Inject() (
     Ok(views.html.index())
   }
 
-  def getAllItemMetadata(): Action[AnyContent] = Action.async { implicit request =>
-    fileListService.getAllItemMetadata.map { item =>
+  def getAllItemMetadata(projectId : String): Action[AnyContent] = Action.async { implicit request =>
+    fileListService.getAllItemMetadata(projectId).map { item =>
       Ok(Json.toJson(item))
     }
   }
 
-  def search(name: String): Action[AnyContent] = Action.async { implicit request =>
-    fileListService.search(name).map { item =>
+  def search(projectId: String, fileName : String): Action[AnyContent] = Action.async { implicit request =>
+    fileListService.search(projectId, fileName).map { item =>
       Ok(Json.toJson(item))
     }
   }
 
-  def downloadFile(id: String): Action[AnyContent] = Action.async { request =>
-    fileListService.getFileItem(id).map {
-      case Some(fileItem) =>
-        Ok(googleBucketRepository.download(fileItem.bucketItemId))
-          .as(fileItem.contentType)
-          .withHeaders("Content-Disposition" -> s"attachment; filename=${fileItem.fileName}")
+  def download(projectId: String, documentId: String): Action[AnyContent] = Action.async { request =>
+    fileListService.getFileItem(projectId, documentId).map {
+      case Some(fileId) =>
+        Ok(googleBucketRepository.download(projectId, fileId.bucketItemId))
+          .as(fileId.contentType)
+          .withHeaders("Content-Disposition" -> s"attachment; filename=${fileId.fileName}")
       case None =>
         NotFound("File not found")
     }
   }
 
-  def delete(id: String): Action[AnyContent] = Action.async { request =>
-    fileListService.deleteFileItem(id).map {
+  def delete(projectId: String, documentId: String): Action[AnyContent] = Action.async { request =>
+    fileListService.deleteFileItem(projectId, documentId).map {
       case Some(value) => Ok(s"Item $value deleted")
-      case None        => NotFound(s"Could not find $id")
+      case None        => NotFound(s"Could not find $documentId")
     }
   }
 

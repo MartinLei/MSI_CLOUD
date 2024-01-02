@@ -29,15 +29,15 @@ class FileListService @Inject() (
     kafkaProducerRepository: KafkaProducerRepository
 ) extends LazyLogging:
 
-  def getAllItemMetadata: Future[FileItemsDto] =
+  def getAllItemMetadata(projectId : String): Future[FileItemsDto] =
     for
-      items <- googleFireStoreRepository.findAll
+      items <- googleFireStoreRepository.findAll(projectId)
       itemsDto = items.map(item => FileItemDto.from(item))
     yield FileItemsDto(itemsDto)
 
-  def search(name: String): Future[FileItemsDto] =
+  def search(projectId: String, fileName : String): Future[FileItemsDto] =
     for
-      items <- googleFireStoreRepository.search(name)
+      items <- googleFireStoreRepository.search(projectId, fileName)
       itemsDto = items.map(item => FileItemDto.from(item))
     yield FileItemsDto(itemsDto)
 
@@ -55,41 +55,41 @@ class FileListService @Inject() (
 
     logger.info(s"Save image and send to imageRecognitionApp. [projectId:'$projectId', fileName: '$fileName']")
 
-    val bucketItemId = MessageDigest
+    val fileId = MessageDigest
       .getInstance("SHA-256")
       .digest(System.nanoTime().toString.getBytes ++ fileName.getBytes("UTF-8"))
       .map("%02X".format(_))
       .mkString
 
     // save image
-    //googleBucketRepository.upload(filePath, bucketItemId)
+    googleBucketRepository.upload(projectId, fileId,path)
 
     // save meta data
-    val newItem = new FileItem("-", fileName, contentType, bucketItemId)
-    //googleFireStoreRepository.save(newItem)
+    val newItem = new FileItem("-", fileName, contentType, fileId)
+    googleFireStoreRepository.save(projectId, newItem)
 
     // give image recognition app a job
-    val message = ImageRecognitionJobMessage(bucketItemId, ImageHelper.readImageFromPath(path, contentType))
+    val message = ImageRecognitionJobMessage(fileId, ImageHelper.readImageFromPath(path, contentType))
     kafkaProducerRepository.sendToImageRecognitionApp(message)
 
-  def getFileItem(documentId: String): Future[Option[FileItem]] =
-    googleFireStoreRepository.findById(documentId)
+  def getFileItem(projectId: String, documentId: String): Future[Option[FileItem]] =
+    googleFireStoreRepository.findById(projectId, documentId)
 
-  def deleteFileItem(documentId: String): Future[Option[String]] =
+  def deleteFileItem(projectId : String, documentId: String): Future[Option[String]] =
     for
-      maybeFileItem <- googleFireStoreRepository.findById(documentId)
+      maybeFileItem <- googleFireStoreRepository.findById(projectId, documentId)
       result <- maybeFileItem match
         case None => Future.failed(new IllegalArgumentException(s"No fileItem with $documentId found"))
         case Some(_) =>
-          googleBucketRepository.delete(documentId)
+          googleBucketRepository.delete(projectId, documentId)
           googleFireStoreRepository
-            .delete(documentId)
+            .delete(projectId, documentId)
             .map(_ => Some(documentId))
     yield result
 
   def deleteAll(): Unit =
-    googleBucketRepository.deleteAll()
-    googleFireStoreRepository.deleteAll()
+    googleBucketRepository.deleteAll("TODO")
+    googleFireStoreRepository.deleteAll("TODO")
 
 
   def saveImageRecognition(bucketId: String, detectedObject: Array[DetectedObject]): Unit =
