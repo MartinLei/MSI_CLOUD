@@ -64,7 +64,7 @@ class GoogleFireStoreRepository @Inject() (configuration: Configuration, lifecyc
       .asScala
       .map(queryDocumentSnapshot => Some(queryDocumentSnapshot.toObject(classOf[FileItem])))
 
-  def search(projectId : String, fileName: String): Future[Seq[FileItem]] =
+  def search(projectId: String, fileName: String): Future[Seq[FileItem]] =
     db.collection(projectId)
       .where(Filter.or(Filter.equalTo("itemName", fileName), Filter.equalTo("fileName", fileName)))
       .get()
@@ -72,7 +72,7 @@ class GoogleFireStoreRepository @Inject() (configuration: Configuration, lifecyc
       .map(querySnapshot => querySnapshot.getDocuments.asScala.toSeq)
       .map(seqQuerySnapshot => seqQuerySnapshot.map(toFileItem))
 
-  def delete(projectId : String, documentId: String): Future[String] =
+  def delete(projectId: String, documentId: String): Future[String] =
     db.collection(projectId)
       .document(documentId)
       .delete()
@@ -81,7 +81,7 @@ class GoogleFireStoreRepository @Inject() (configuration: Configuration, lifecyc
 
   /** Only used for debugging purpose. For deleting all files in the bucket.
     */
-  def deleteAll(projectId : String): Unit =
+  def deleteAll(projectId: String): Unit =
     val batch = db.batch()
     val documents = db.collection(projectId).get().get().asScala
     documents

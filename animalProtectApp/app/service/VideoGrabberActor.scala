@@ -18,9 +18,9 @@ import scala.concurrent.duration.{Duration, DurationInt}
 import scala.language.postfixOps
 
 object VideoGrabberActor:
-  def apply(fileListService: FileListService,
-             projectId: String,
-             streamUrl: String): Props = Props(new VideoGrabberActor(fileListService, projectId, streamUrl))
+  def apply(fileListService: FileListService, projectId: String, streamUrl: String): Props = Props(
+    new VideoGrabberActor(fileListService, projectId, streamUrl)
+  )
 
   case class Start()
   case class GrabNextFrame()
@@ -28,16 +28,16 @@ object VideoGrabberActor:
   case class Shutdown()
   case class RetryReconnect(retryAttempt: Int)
 
-final class VideoGrabberActor(fileListService: FileListService,
-                              projectId: String,
-                              streamUrl: String) extends Actor with LazyLogging:
+final class VideoGrabberActor(fileListService: FileListService, projectId: String, streamUrl: String)
+    extends Actor
+    with LazyLogging:
   implicit val ec: ExecutionContextExecutor = context.dispatcher
 
   private val grabber: FFmpegFrameGrabber = FFmpegFrameGrabber.createDefault(streamUrl)
   FFmpegFrameGrabber.tryLoad()
 
   var index: Int = 0 // TODO remove
-  var shutdown : Boolean = false
+  var shutdown: Boolean = false
   def receive: Receive = {
     case GrabNextFrame() =>
       logger.info(s"Grab next frame. [projectId: '$projectId', url: '$streamUrl']")
@@ -48,16 +48,17 @@ final class VideoGrabberActor(fileListService: FileListService,
       shutdown = true
       context.stop(self)
     case RetryReconnect(retryAttempt) =>
-      logger.info(s"Retry reconnect grabber. " +
-        s"[projectId: '$projectId', url: '$streamUrl', retryAttempt: '$retryAttempt']")
+      logger.info(
+        s"Retry reconnect grabber. " +
+          s"[projectId: '$projectId', url: '$streamUrl', retryAttempt: '$retryAttempt']"
+      )
       run(streamUrl, retryAttempt + 1)
   }
 
   def run(rtmpStreamURL: String, retryAttempt: Int): Unit =
-    if (shutdown) {
+    if shutdown then
       logger.info(s"IgnoreMessage. [projectId: '$projectId', url: '$streamUrl']")
       return
-    }
 
     var bufferedImage: BufferedImage = null
     try
@@ -85,8 +86,7 @@ final class VideoGrabberActor(fileListService: FileListService,
     fileListService.addFileItem(projectId, tempFile)
     context.system.scheduler.scheduleOnce(1.second, self, GrabNextFrame())
 
-  private def grabFrame(grabber: FFmpegFrameGrabber,
-                        retryAttempt: Int): BufferedImage =
+  private def grabFrame(grabber: FFmpegFrameGrabber, retryAttempt: Int): BufferedImage =
     logger.info(s"Skip frames ca. 10sec. [projectId: '$projectId', url: '$streamUrl']")
     for i <- 1 to 300 do
       grabber.grabImage()
@@ -96,5 +96,3 @@ final class VideoGrabberActor(fileListService: FileListService,
 
     val converter = new Java2DFrameConverter()
     converter.getBufferedImage(frame)
-
-

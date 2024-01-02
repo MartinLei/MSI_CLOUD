@@ -20,13 +20,13 @@ class FileListController @Inject() (
     Ok(views.html.index())
   }
 
-  def getAllItemMetadata(projectId : String): Action[AnyContent] = Action.async { implicit request =>
+  def getAllItemMetadata(projectId: String): Action[AnyContent] = Action.async { implicit request =>
     fileListService.getAllItemMetadata(projectId).map { item =>
       Ok(Json.toJson(item))
     }
   }
 
-  def search(projectId: String, fileName : String): Action[AnyContent] = Action.async { implicit request =>
+  def search(projectId: String, fileName: String): Action[AnyContent] = Action.async { implicit request =>
     fileListService.search(projectId, fileName).map { item =>
       Ok(Json.toJson(item))
     }

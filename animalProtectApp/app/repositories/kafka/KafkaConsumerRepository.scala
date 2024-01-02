@@ -21,7 +21,8 @@ import service.FileListService
 
 import scala.concurrent.duration.Duration
 
-class KafkaConsumerRepository @Inject() (lifecycle: ApplicationLifecycle, fileListService: FileListService) extends LazyLogging:
+class KafkaConsumerRepository @Inject() (lifecycle: ApplicationLifecycle, fileListService: FileListService)
+    extends LazyLogging:
   implicit val system: ActorSystem = ActorSystem("image_recognition_done")
   private val consumerSettings: ConsumerSettings[String, String] =
     ConsumerSettings(system, new StringDeserializer, new StringDeserializer)
@@ -44,7 +45,7 @@ class KafkaConsumerRepository @Inject() (lifecycle: ApplicationLifecycle, fileLi
       case _ =>
         logger.info("Received unknown message type")
         NotUsed
-      }
+    }
 
   // TOPIC image_recognition_done
   private val (consumerControl, streamComplete) = Consumer

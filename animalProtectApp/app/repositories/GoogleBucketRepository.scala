@@ -75,7 +75,7 @@ class GoogleBucketRepository @Inject() (configuration: Configuration, lifecycle:
 
   /** Only used for debugging purpose. For deleting all files in the bucket.
     */
-  def deleteAll(projectId : String): Unit =
+  def deleteAll(projectId: String): Unit =
     val batch = storage.batch
     val blobs = storage
       .list(googleBucketName, Storage.BlobListOption.currentDirectory, Storage.BlobListOption.prefix(projectId))

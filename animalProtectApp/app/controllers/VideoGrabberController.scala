@@ -1,6 +1,5 @@
 package controllers
 
-
 import service.VideoGrabberActor.{GrabNextFrame, Shutdown}
 
 import javax.inject.*
@@ -16,9 +15,8 @@ import service.{FileListService, VideoGrabberActor}
 
 import scala.collection.mutable
 @Singleton
-class VideoGrabberController @Inject()(system: ActorSystem,
-                                       cc: ControllerComponents,
-                                       fileListService: FileListService) extends AbstractController(cc) {
+class VideoGrabberController @Inject() (system: ActorSystem, cc: ControllerComponents, fileListService: FileListService)
+    extends AbstractController(cc):
 
   implicit val timeout: Timeout = 20.seconds
   implicit val ec: scala.concurrent.ExecutionContext = scala.concurrent.ExecutionContext.global
@@ -26,7 +24,7 @@ class VideoGrabberController @Inject()(system: ActorSystem,
   private val actors: mutable.Map[String, ActorRef] = mutable.Map.empty
 
   def startGrabbing(projectId: String, streamingUrl: String): Action[AnyContent] = Action.async {
-    actors.get(projectId) match {
+    actors.get(projectId) match
       case Some(_) =>
         Future.successful(Conflict(s"A video grabber is already active for given project. [projectId: '$projectId']"))
       case None =>
@@ -37,17 +35,14 @@ class VideoGrabberController @Inject()(system: ActorSystem,
         actors.put(projectId, videoGrabberActor)
         videoGrabberActor ! GrabNextFrame()
         Future.successful(Ok(s"Started video grabber. [projectId: '$projectId', streamingUrl: '$streamingUrl']"))
-    }
   }
 
   def stopGrabbing(projectId: String): Action[AnyContent] = Action.async {
-    actors.get(projectId) match {
+    actors.get(projectId) match
       case Some(actorRef) =>
         actorRef ! Shutdown()
         actors.remove(projectId)
         Future.successful(Ok(s"Video grabber for given projectId was stopped. [projectId: '$projectId']"))
       case None =>
         Future.successful(NotFound(s"No video grabber for given projectId was found. [projectId: '$projectId']"))
-    }
   }
-}
