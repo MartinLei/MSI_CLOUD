@@ -18,8 +18,8 @@ import scala.concurrent.duration.{Duration, DurationInt}
 import scala.language.postfixOps
 
 object VideoGrabberActor:
-  def apply(fileListService: FileListService, projectId: String, streamUrl: String): Props = Props(
-    new VideoGrabberActor(fileListService, projectId, streamUrl)
+  def apply(itemService: ItemService, projectId: String, streamUrl: String): Props = Props(
+    new VideoGrabberActor(itemService, projectId, streamUrl)
   )
 
   case class Start()
@@ -28,7 +28,7 @@ object VideoGrabberActor:
   case class Shutdown()
   case class RetryReconnect(retryAttempt: Int)
 
-final class VideoGrabberActor(fileListService: FileListService, projectId: String, streamUrl: String)
+final class VideoGrabberActor(itemService: ItemService, projectId: String, streamUrl: String)
     extends Actor
     with LazyLogging:
   implicit val ec: ExecutionContextExecutor = context.dispatcher
@@ -83,7 +83,7 @@ final class VideoGrabberActor(fileListService: FileListService, projectId: Strin
     val reducedBufferedImage = ImageResizer.resize(bufferedImage)
     val tempFile = Files.createTempFile(filename, ".png")
     ImageIO.write(reducedBufferedImage, "png", tempFile.toFile)
-    fileListService.addItem(projectId, tempFile)
+    itemService.addItem(projectId, tempFile)
     context.system.scheduler.scheduleOnce(1.second, self, GrabNextFrame())
 
   private def grabFrame(grabber: FFmpegFrameGrabber, retryAttempt: Int): BufferedImage =

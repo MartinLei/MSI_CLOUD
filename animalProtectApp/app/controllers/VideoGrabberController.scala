@@ -11,11 +11,11 @@ import scala.concurrent.Future
 import scala.concurrent.duration.*
 import org.apache.pekko.pattern.ask
 import repositories.kafka.KafkaProducerRepository
-import service.{FileListService, VideoGrabberActor}
+import service.{ItemService, VideoGrabberActor}
 
 import scala.collection.mutable
 @Singleton
-class VideoGrabberController @Inject() (system: ActorSystem, cc: ControllerComponents, fileListService: FileListService)
+class VideoGrabberController @Inject() (system: ActorSystem, cc: ControllerComponents, itemService: ItemService)
     extends AbstractController(cc):
 
   implicit val timeout: Timeout = 20.seconds
@@ -29,7 +29,7 @@ class VideoGrabberController @Inject() (system: ActorSystem, cc: ControllerCompo
         Future.successful(Conflict(s"A video grabber is already active for given project. [projectId: '$projectId']"))
       case None =>
         val videoGrabberActor = system.actorOf(
-          VideoGrabberActor(fileListService, projectId, streamingUrl),
+          VideoGrabberActor(itemService, projectId, streamingUrl),
           "actor_" + projectId
         )
         actors.put(projectId, videoGrabberActor)

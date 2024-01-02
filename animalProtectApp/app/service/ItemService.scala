@@ -3,7 +3,7 @@ package service
 import com.typesafe.scalalogging.LazyLogging
 import io.circe
 import io.circe.*
-import models.{FileItem, FileItemDto, FileItemsDto}
+import models.{Item, ItemDto, ItemsDto}
 import play.api.libs.Files.TemporaryFile
 import play.api.mvc.MultipartFormData.*
 import repositories.kafka.KafkaProducerRepository
@@ -17,23 +17,23 @@ import javax.inject.Inject
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-class FileListService @Inject() (
+class ItemService @Inject()(
     googleBucketRepository: GoogleBucketRepository,
     googleFireStoreRepository: GoogleFireStoreRepository,
     kafkaProducerRepository: KafkaProducerRepository
 ) extends LazyLogging:
 
-  def getAllItemMetadata(projectId: String): Future[FileItemsDto] =
+  def getAllItemMetadata(projectId: String): Future[ItemsDto] =
     for
       items <- googleFireStoreRepository.findAll(projectId)
-      itemsDto = items.map(item => FileItemDto.from(item))
-    yield FileItemsDto(itemsDto)
+      itemsDto = items.map(item => ItemDto.from(item))
+    yield ItemsDto(itemsDto)
 
-  def search(projectId: String, fileName: String): Future[FileItemsDto] =
+  def search(projectId: String, fileName: String): Future[ItemsDto] =
     for
       items <- googleFireStoreRepository.search(projectId, fileName)
-      itemsDto = items.map(item => FileItemDto.from(item))
-    yield FileItemsDto(itemsDto)
+      itemsDto = items.map(item => ItemDto.from(item))
+    yield ItemsDto(itemsDto)
 
   def addItem(projectId: String, filePart: FilePart[TemporaryFile]): Unit =
     val path = ImageResizer.resize(filePart.ref.path)
@@ -57,14 +57,14 @@ class FileListService @Inject() (
     googleBucketRepository.upload(projectId, imageId, path)
 
     // save meta data
-    val newItem = new FileItem("-", fileName, contentType, imageId)
+    val newItem = new Item("-", fileName, contentType, imageId)
     googleFireStoreRepository.save(projectId, newItem)
 
     // give image recognition app a job
     val message = ImageRecognitionJobMessage(imageId, ImageHelper.readImageFromPath(path, contentType))
     kafkaProducerRepository.sendToImageRecognitionApp(message)
 
-  def getItem(projectId: String, itemId: String): Future[Option[FileItem]] =
+  def getItem(projectId: String, itemId: String): Future[Option[Item]] =
     googleFireStoreRepository.findById(projectId, itemId)
 
   def deleteItem(projectId: String, itemId: String): Future[Option[String]] =

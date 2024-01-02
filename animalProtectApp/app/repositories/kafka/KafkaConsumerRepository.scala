@@ -17,11 +17,11 @@ import org.apache.kafka.clients.consumer.{ConsumerConfig, ConsumerRecord}
 import org.apache.kafka.common.serialization.StringDeserializer
 import play.api.inject.ApplicationLifecycle
 import repositories.kafka.model.{DetectedObject, ImageRecognitionJobMessage, ImageRecognitionResultMessage, Message}
-import service.FileListService
+import service.ItemService
 
 import scala.concurrent.duration.Duration
 
-class KafkaConsumerRepository @Inject() (lifecycle: ApplicationLifecycle, fileListService: FileListService)
+class KafkaConsumerRepository @Inject() (lifecycle: ApplicationLifecycle, itemService: ItemService)
     extends LazyLogging:
   implicit val system: ActorSystem = ActorSystem("image_recognition_done")
   private val consumerSettings: ConsumerSettings[String, String] =
@@ -40,7 +40,7 @@ class KafkaConsumerRepository @Inject() (lifecycle: ApplicationLifecycle, fileLi
     Flow[Message].map {
       case message: ImageRecognitionResultMessage =>
         logger.info(s"Receive message with bucketId: ${message.bucketId}")
-        fileListService.saveImageRecognition(message.bucketId, message.detectedObject)
+        itemService.saveImageRecognition(message.bucketId, message.detectedObject)
         NotUsed
       case _ =>
         logger.info("Received unknown message type")

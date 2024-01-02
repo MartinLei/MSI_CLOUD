@@ -5,33 +5,33 @@
 
 GET     /assets/*file               controllers.Assets.versioned(path="/public", file: Asset)
 
-GET     /                           controllers.FileListController.index()
+GET     /                           controllers.ItemController.index()
 
 # show all file for given project
 # http://localhost:9000/files?projectId=testProject
-GET     /files                      controllers.FileListController.getAllItemMetadata(projectId: String)
+GET     /files                      controllers.ItemController.getAllItemMetadata(projectId: String)
 
 # search for a name
 # http://localhost:9000/search?projectId=testProject&name=Test
-GET     /search                     controllers.FileListController.search(projectId: String, name: String)
+GET     /search                     controllers.ItemController.search(projectId: String, name: String)
 
 # upload file with a name.
 # http://localhost:9000/upload?projectId=testProject
 # Note: Postmann add picture at Body with key file
 + nocsrf
-POST    /upload                     controllers.FileListController.upload(projectId: String)
+POST    /upload                     controllers.ItemController.upload(projectId: String)
 
 # download file with given id
 # http://localhost:9000/download?projectId=testProject&itemId=TEST
-GET     /download                   controllers.FileListController.download(projectId : String, itemId: String)
+GET     /download                   controllers.ItemController.download(projectId : String, itemId: String)
 
 # delete item for given project
 # http://localhost:9000/delete?projectId=testProject&itemId=TEST
-POST    /delete                     controllers.FileListController.delete(projectId : String, itemId: String)
+POST    /delete                     controllers.ItemController.delete(projectId : String, itemId: String)
 
 # delete all data of given project
 # http://localhost:9000/deleteProject?projectId=testProject
-GET     /deleteProject              controllers.FileListController.deleteProject(projectId : String)
+GET     /deleteProject              controllers.ItemController.deleteProject(projectId : String)
 
 # start grabbing on vido stream. See /upload for debugging with a sample image
 # http://localhost:9000/startGrabbing?streamingUrl=rtmp://localhost/live"&projectId=testProject

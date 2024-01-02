@@ -1,7 +1,7 @@
 package service
 
 import play.api.test.Helpers.defaultAwaitTimeout
-import models.{FileItem, FileItemDto, FileItemsDto}
+import models.{Item, ItemDto, ItemsDto}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import org.scalatest.matchers.should.Matchers.shouldBe
@@ -16,13 +16,13 @@ import repositories.{GoogleBucketRepository, GoogleFireStoreRepository}
 import scala.concurrent.Future
 import scala.concurrent.duration.*
 
-class FileListServiceTest extends PlaySpec with GuiceOneAppPerTest with Injecting with MockitoSugar:
+class ItemServiceTest extends PlaySpec with GuiceOneAppPerTest with Injecting with MockitoSugar:
   // given defaultAwaitTimeout: Timeout = 2.seconds
 
   val googleBucketRepositoryMock: GoogleBucketRepository = mock[GoogleBucketRepository]
   val googleFireStoreRepositoryMock: GoogleFireStoreRepository = mock[GoogleFireStoreRepository]
   val kafkaProducerRepositoryMock: KafkaProducerRepository = mock[KafkaProducerRepository]
-  val sut = new FileListService(googleBucketRepositoryMock, googleFireStoreRepositoryMock, kafkaProducerRepositoryMock)
+  val sut = new ItemService(googleBucketRepositoryMock, googleFireStoreRepositoryMock, kafkaProducerRepositoryMock)
 
   "getAllItemMetadata" should {
     "find all items" in {
@@ -35,7 +35,7 @@ class FileListServiceTest extends PlaySpec with GuiceOneAppPerTest with Injectin
       val result = await(sut.getAllItemMetadata)
 
       // verify
-      var expected = FileItemsDto(Seq(FileItemDto.from(file1), FileItemDto.from(file2)))
+      var expected = ItemsDto(Seq(ItemDto.from(file1), ItemDto.from(file2)))
       result shouldBe expected
     }
   }
@@ -51,7 +51,7 @@ class FileListServiceTest extends PlaySpec with GuiceOneAppPerTest with Injectin
       val result = await(sut.search("itemName1"))
 
       // verify
-      var expected = FileItemsDto(Seq(FileItemDto.from(file1)))
+      var expected = ItemsDto(Seq(ItemDto.from(file1)))
       result shouldBe expected
     }
   }

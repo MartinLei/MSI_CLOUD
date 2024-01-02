@@ -3,17 +3,17 @@ import play.api.libs.Files
 import play.api.libs.json.Json
 import play.api.mvc.*
 import repositories.GoogleBucketRepository
-import service.FileListService
+import service.ItemService
 
 import javax.inject.Inject
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 import scala.util.Failure
 import scala.util.Success
-class FileListController @Inject() (
-    val controllerComponents: ControllerComponents,
-    val fileListService: FileListService,
-    val googleBucketRepository: GoogleBucketRepository
+class ItemController @Inject()(
+                                     val controllerComponents: ControllerComponents,
+                                     val itemService: ItemService,
+                                     val googleBucketRepository: GoogleBucketRepository
 ) extends BaseController:
 
   def index(): Action[AnyContent] = Action { implicit request: Request[AnyContent] =>
@@ -21,19 +21,19 @@ class FileListController @Inject() (
   }
 
   def getAllItemMetadata(projectId: String): Action[AnyContent] = Action.async { implicit request =>
-    fileListService.getAllItemMetadata(projectId).map { item =>
+    itemService.getAllItemMetadata(projectId).map { item =>
       Ok(Json.toJson(item))
     }
   }
 
   def search(projectId: String, fileName: String): Action[AnyContent] = Action.async { implicit request =>
-    fileListService.search(projectId, fileName).map { item =>
+    itemService.search(projectId, fileName).map { item =>
       Ok(Json.toJson(item))
     }
   }
 
   def download(projectId: String, itemId: String): Action[AnyContent] = Action.async { request =>
-    fileListService.getItem(projectId, itemId).map {
+    itemService.getItem(projectId, itemId).map {
       case Some(item) =>
         Ok(googleBucketRepository.download(projectId, item.bucketItemId))
           .as(item.contentType)
@@ -44,14 +44,14 @@ class FileListController @Inject() (
   }
 
   def delete(projectId: String, itemId: String): Action[AnyContent] = Action.async { request =>
-    fileListService.deleteItem(projectId, itemId).map {
+    itemService.deleteItem(projectId, itemId).map {
       case Some(value) => Ok(s"Item $value deleted")
       case None        => NotFound(s"Could not find $itemId")
     }
   }
 
   def deleteProject(projectId: String): Action[AnyContent] = Action.async { request =>
-    fileListService.deleteProject(projectId)
+    itemService.deleteProject(projectId)
 
     Future.successful(Ok("Deleted all files"))
   }
@@ -61,9 +61,9 @@ class FileListController @Inject() (
       request.body
         .file("file")
         .map { file =>
-          fileListService.addItem(projectId, file)
+          itemService.addItem(projectId, file)
           // TODO REMOVE
-          Redirect(routes.FileListController.index())
+          Redirect(routes.ItemController.index())
         }
         .getOrElse {
           BadRequest("File upload failed")

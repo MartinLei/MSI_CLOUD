@@ -4,7 +4,7 @@ import com.google.api.core.ApiFuture
 import com.google.auth.oauth2.GoogleCredentials
 import com.google.cloud.firestore.*
 import com.typesafe.scalalogging.LazyLogging
-import models.FileItem
+import models.Item
 import play.api.Configuration
 import play.api.inject.ApplicationLifecycle
 import utils.asScala
@@ -43,28 +43,28 @@ class GoogleFireStoreRepository @Inject() (configuration: Configuration, lifecyc
     .build
     .getService
 
-  def save(projectId: String, fileItem: FileItem): Future[Int] =
+  def save(projectId: String, fileItem: Item): Future[Int] =
     logger.info(s"Upload metadate to firestore.  [projectId: '$projectId']")
     db.collection(projectId)
       .add(fileItem)
       .asScala
       .map(documentReference => documentReference.getId.toInt)
 
-  def findAll(projectId: String): Future[Seq[FileItem]] =
+  def findAll(projectId: String): Future[Seq[Item]] =
     db.collection(projectId)
       .get()
       .asScala
       .map(querySnapshot => querySnapshot.getDocuments.asScala.toSeq)
       .map(seqQuerySnapshot => seqQuerySnapshot.map(toFileItem))
 
-  def findById(projectId: String, itemId: String): Future[Option[FileItem]] =
+  def findById(projectId: String, itemId: String): Future[Option[Item]] =
     db.collection(projectId)
       .document(itemId)
       .get()
       .asScala
-      .map(queryDocumentSnapshot => Some(queryDocumentSnapshot.toObject(classOf[FileItem])))
+      .map(queryDocumentSnapshot => Some(queryDocumentSnapshot.toObject(classOf[Item])))
 
-  def search(projectId: String, fileName: String): Future[Seq[FileItem]] =
+  def search(projectId: String, fileName: String): Future[Seq[Item]] =
     db.collection(projectId)
       .where(Filter.or(Filter.equalTo("itemName", fileName), Filter.equalTo("fileName", fileName)))
       .get()
@@ -94,7 +94,7 @@ class GoogleFireStoreRepository @Inject() (configuration: Configuration, lifecyc
     batch.commit()
     logger.info(s"Delete all ${documents.size} entries in fileStore of collection $projectId")
 
-  def toFileItem: QueryDocumentSnapshot => FileItem =
+  def toFileItem: QueryDocumentSnapshot => Item =
     queryDocumentSnapshot =>
-      val fileItem: FileItem = queryDocumentSnapshot.toObject(classOf[FileItem])
-      FileItem.apply(queryDocumentSnapshot.getId, fileItem)
+      val fileItem: Item = queryDocumentSnapshot.toObject(classOf[Item])
+      Item.apply(queryDocumentSnapshot.getId, fileItem)
