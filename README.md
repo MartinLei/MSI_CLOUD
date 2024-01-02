@@ -12,6 +12,10 @@ You could upload files. See all uploaded files and also download wanted files.
 
 1. Start the rtmp stream /dev/tools/rtmp_server.
 2. Start kafka ```docker compose -f zk-single-kafka-single.yml up```
+   - add environment variable to given yml
+   - ```KAFKA_MESSAGE_MAX_BYTES: 4194304 ## 4MB ADDED```
+   - ```KAFKA_MAX_REQUEST_SIZE: 4194304 ## 4MB ADDED```
+   - ```KAFKA_MAX_PARTITION_FETCH_BYTES: 4194304 ## 4MB ADDED```
 3. Run animalProtectApp core service with ```$  sbt "project animalProtectApp" "run"```$.
 4. Run imageRecognitionApp service ```$  npm run start```$.
 

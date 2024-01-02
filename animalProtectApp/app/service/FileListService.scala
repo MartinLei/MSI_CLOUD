@@ -12,7 +12,7 @@ import play.api.mvc.MultipartFormData.*
 import repositories.kafka.model.{DetectedObject, ImageRecognitionJobMessage, ImageRecognitionResultMessage, Message}
 import repositories.kafka.KafkaProducerRepository
 import repositories.{GoogleBucketRepository, GoogleFireStoreRepository}
-import utils.ImageHelper
+import utils.{ImageHelper, ImageResizer}
 
 import java.awt.image.BufferedImage
 import java.io.{ByteArrayOutputStream, IOException}
@@ -41,20 +41,20 @@ class FileListService @Inject() (
       itemsDto = items.map(item => FileItemDto.from(item))
     yield FileItemsDto(itemsDto)
 
-  def addFileItem(itemName: String, file: FilePart[TemporaryFile]): Unit =
-    val filePath = file.ref.path
-    addFileItem("TODO", itemName, filePath)
+  def addFileItem(projectId: String, filePart: FilePart[TemporaryFile]): Unit =
+    val path = ImageResizer.resize(filePart.ref.path)
+     addFileItem(projectId, path)
 
-  def addFileItem(projectId: String, itemName: String, filePath: Path): Unit =
-    val fileName: String = filePath.getFileName.getFileName.toString
-    val contentType: String = Option(Files.probeContentType(filePath))
+  def addFileItem(projectId: String, path: Path): Unit =
+    val fileName: String = path.getFileName.getFileName.toString
+    val contentType: String = Option(Files.probeContentType(path))
     match {
       case Some(contentType) => contentType
       case None => "image/png"
     }
 
     logger.info(s"Save image and send to imageRecognitionApp. [projectId:'$projectId', fileName: '$fileName']")
-    
+
     val bucketItemId = MessageDigest
       .getInstance("SHA-256")
       .digest(System.nanoTime().toString.getBytes ++ fileName.getBytes("UTF-8"))
@@ -62,14 +62,14 @@ class FileListService @Inject() (
       .mkString
 
     // save image
-    googleBucketRepository.upload(filePath, bucketItemId)
+    //googleBucketRepository.upload(filePath, bucketItemId)
 
     // save meta data
-    val newItem = new FileItem("-", itemName, fileName, contentType, bucketItemId)
-    googleFireStoreRepository.save(newItem)
+    val newItem = new FileItem("-", fileName, contentType, bucketItemId)
+    //googleFireStoreRepository.save(newItem)
 
     // give image recognition app a job
-    val message = ImageRecognitionJobMessage(bucketItemId, ImageHelper.readImageFromPath(filePath, contentType))
+    val message = ImageRecognitionJobMessage(bucketItemId, ImageHelper.readImageFromPath(path, contentType))
     kafkaProducerRepository.sendToImageRecognitionApp(message)
 
 //    val meWhole : String= """{"ImageRecognitionResultMessage":{"bucketId":"402718B588EBBEAD89E24BF5A0BE7AC6E085B6B82D294FD2D6E5659398B0D1B6","detectedObject":[{"bbox":[391.58880615234375,66.13458108901978,614.579345703125,532.4546041488647],"class":"dog","score":0.9556354880332947},{"bbox":[7.6615447998046875,16.496836066246033,325.2234649658203,530.635656952858],"class":"dog","score":0.8764094710350037},{"bbox":[541.8712158203125,-0.16977345943450928,187.919921875,172.703866481781],"class":"person","score":0.5290907025337219}]}}"""

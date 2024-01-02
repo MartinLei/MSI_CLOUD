@@ -38,7 +38,7 @@ class KafkaProducerRepository @Inject() (lifecycle: ApplicationLifecycle) extend
     val record = generateRecord(imageRecognitionAppKey, message)
     val send: Future[RecordMetadata] = producer.send(record)
 
-    // Blocking here for illustration only, you need to handle the future result
+    // Blocking here for illustration only, you need to handle the future result TODO
     Await.result(send, 2.seconds)
 
   private def generateRecord(key: String, message: Message): ProducerRecord[String, String] =

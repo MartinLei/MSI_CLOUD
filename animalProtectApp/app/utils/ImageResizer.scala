@@ -5,6 +5,7 @@ import java.awt.image.BufferedImage
 import java.io.ByteArrayOutputStream
 import javax.imageio.ImageIO
 import java.io.File
+import java.nio.file.Path
 
 object ImageResizer {
   def resize(originalImage: BufferedImage): BufferedImage = {
@@ -37,5 +38,35 @@ object ImageResizer {
     }
 
     compressedImage
+  }
+
+  def resize(path: Path): Path = {
+    val bufferedImage: BufferedImage = loadImage(path)
+    val resizedBuffedImage = resize(bufferedImage)
+
+    saveImage(resizedBuffedImage, path)
+    path
+  }
+
+  private def saveImage(image: BufferedImage, imagePath: Path): Unit = {
+    val imageFile = imagePath.toFile
+    val imageName = imageFile.getName
+    val imageExtension = imageName.substring(imageName.lastIndexOf('.') + 1)
+
+    try {
+      ImageIO.write(image, imageExtension, imageFile)
+    } catch {
+      case e: Exception =>
+        e.printStackTrace()
+    }
+  }
+  private def loadImage(imagePath: Path): BufferedImage = {
+    try {
+      ImageIO.read(imagePath.toFile)
+    } catch {
+      case e: Exception =>
+        e.printStackTrace()
+        null
+    }
   }
 }

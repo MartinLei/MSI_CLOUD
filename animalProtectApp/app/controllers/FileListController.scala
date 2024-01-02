@@ -56,12 +56,13 @@ class FileListController @Inject() (
     Future.successful(Ok("Deleted all files"))
   }
 
-  def upload(itemName: String): Action[MultipartFormData[Files.TemporaryFile]] = Action(parse.multipartFormData) {
+  def upload(projectId: String): Action[MultipartFormData[Files.TemporaryFile]] = Action(parse.multipartFormData) {
     request =>
       request.body
         .file("file")
         .map { file =>
-          fileListService.addFileItem(itemName, file)
+          fileListService.addFileItem(projectId, file)
+          // TODO REMOVE
           Redirect(routes.FileListController.index())
         }
         .getOrElse {

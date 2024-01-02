@@ -13,10 +13,11 @@ GET     /files                      controllers.FileListController.getAllItemMet
 # search for a name - http://localhost:9000/search?name=Test
 GET    /search                      controllers.FileListController.search(name: String)
 
-# upload file with a name - http://localhost:9000/upload?itemName=Test
+# upload file with a name.
+# http://localhost:9000/upload?projectId=testProject
 # Note: Postmann add picture at Body with key file
 + nocsrf
-POST   /upload                      controllers.FileListController.upload(itemName: String)
+POST   /upload                      controllers.FileListController.upload(projectId: String)
 
 # download file with given id - http://localhost:9000/download/2
 GET    /download/:id                controllers.FileListController.downloadFile(id: String)
@@ -27,7 +28,7 @@ POST   /delete/:id                  controllers.FileListController.delete(id: St
 # delete all saved fileItem with given id - http://localhost:9000/deleteAll
 GET   /deleteAll                  controllers.FileListController.deleteAll()
 
-# start grabbing on vido stream
+# start grabbing on vido stream. See /upload for debugging with a sample image
 # http://localhost:9000/startGrabbing?streamingUrl=rtmp://localhost/live"&projectId=testProject
 GET     /startGrabbing                   controllers.VideoGrabberController.startGrabbing(projectId: String, streamingUrl: String)
 
