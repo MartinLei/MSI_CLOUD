@@ -83,7 +83,7 @@ final class VideoGrabberActor(fileListService: FileListService, projectId: Strin
     val reducedBufferedImage = ImageResizer.resize(bufferedImage)
     val tempFile = Files.createTempFile(filename, ".png")
     ImageIO.write(reducedBufferedImage, "png", tempFile.toFile)
-    fileListService.addFileItem(projectId, tempFile)
+    fileListService.addItem(projectId, tempFile)
     context.system.scheduler.scheduleOnce(1.second, self, GrabNextFrame())
 
   private def grabFrame(grabber: FFmpegFrameGrabber, retryAttempt: Int): BufferedImage =

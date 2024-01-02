@@ -32,26 +32,26 @@ class FileListController @Inject() (
     }
   }
 
-  def download(projectId: String, documentId: String): Action[AnyContent] = Action.async { request =>
-    fileListService.getFileItem(projectId, documentId).map {
-      case Some(fileId) =>
-        Ok(googleBucketRepository.download(projectId, fileId.bucketItemId))
-          .as(fileId.contentType)
-          .withHeaders("Content-Disposition" -> s"attachment; filename=${fileId.fileName}")
+  def download(projectId: String, itemId: String): Action[AnyContent] = Action.async { request =>
+    fileListService.getItem(projectId, itemId).map {
+      case Some(item) =>
+        Ok(googleBucketRepository.download(projectId, item.bucketItemId))
+          .as(item.contentType)
+          .withHeaders("Content-Disposition" -> s"attachment; filename=${item.fileName}")
       case None =>
         NotFound("File not found")
     }
   }
 
-  def delete(projectId: String, documentId: String): Action[AnyContent] = Action.async { request =>
-    fileListService.deleteFileItem(projectId, documentId).map {
+  def delete(projectId: String, itemId: String): Action[AnyContent] = Action.async { request =>
+    fileListService.deleteItem(projectId, itemId).map {
       case Some(value) => Ok(s"Item $value deleted")
-      case None        => NotFound(s"Could not find $documentId")
+      case None        => NotFound(s"Could not find $itemId")
     }
   }
 
-  def deleteAll(): Action[AnyContent] = Action.async { request =>
-    fileListService.deleteAll()
+  def deleteProject(projectId: String): Action[AnyContent] = Action.async { request =>
+    fileListService.deleteProject(projectId)
 
     Future.successful(Ok("Deleted all files"))
   }
@@ -61,7 +61,7 @@ class FileListController @Inject() (
       request.body
         .file("file")
         .map { file =>
-          fileListService.addFileItem(projectId, file)
+          fileListService.addItem(projectId, file)
           // TODO REMOVE
           Redirect(routes.FileListController.index())
         }

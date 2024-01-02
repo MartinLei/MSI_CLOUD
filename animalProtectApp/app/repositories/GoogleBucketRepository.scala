@@ -39,38 +39,38 @@ class GoogleBucketRepository @Inject() (configuration: Configuration, lifecycle:
     .build()
     .getService
 
-  private def getBlobId(projectId: String, fileId: String): BlobId =
-    val fullIdentifier = projectId + "/" + fileId
+  private def getBlobId(projectId: String, imageId: String): BlobId =
+    val fullIdentifier = projectId + "/" + imageId
     BlobId.of(googleBucketName, fullIdentifier)
 
-  def upload(projectId: String, fileId: String, path: Path): Unit =
+  def upload(projectId: String, imageId: String, path: Path): Unit =
 
-    val blobId = getBlobId(projectId, fileId)
+    val blobId = getBlobId(projectId, imageId)
     val blobInfo = BlobInfo.newBuilder(blobId).build()
 
     // Optional: set a generation-match precondition to avoid potential race
     // conditions and data corruptions. The request returns a 412 error if the
     // preconditions are not met.
-    val precondition = Option(storage.get(googleBucketName, fileId)) match
+    val precondition = Option(storage.get(googleBucketName, imageId)) match
       case Some(_) =>
         // If the destination already exists in your bucket, instead set a generation-match
         // precondition. This will cause the request to fail if the existing object's generation
         // changes before the request runs.
-        Storage.BlobWriteOption.generationMatch(storage.get(googleBucketName, fileId).getGeneration)
+        Storage.BlobWriteOption.generationMatch(storage.get(googleBucketName, imageId).getGeneration)
       case None =>
         // For a target object that does not yet exist, set the DoesNotExist precondition.
         // This will cause the request to fail if the object is created before the request runs.
         Storage.BlobWriteOption.doesNotExist()
 
     storage.createFrom(blobInfo, path, precondition)
-    logger.info(s"Upload file to bucket.  [projectId: '$projectId', fileId: '$fileId']")
+    logger.info(s"Upload file to bucket.  [projectId: '$projectId', imageId: '$imageId']")
 
-  def download(projectId: String, fileId: String): Array[Byte] =
-    val blobId = getBlobId(projectId, fileId)
+  def download(projectId: String, imageId: String): Array[Byte] =
+    val blobId = getBlobId(projectId, imageId)
     storage.readAllBytes(blobId)
 
-  def delete(projectId: String, fileId: String): Boolean =
-    val blobId = getBlobId(projectId, fileId)
+  def delete(projectId: String, imageId: String): Boolean =
+    val blobId = getBlobId(projectId, imageId)
     storage.delete(blobId)
 
   /** Only used for debugging purpose. For deleting all files in the bucket.

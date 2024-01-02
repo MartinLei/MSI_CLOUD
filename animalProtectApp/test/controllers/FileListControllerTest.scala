@@ -61,7 +61,7 @@ class FileListControllerTest extends PlaySpec with GuiceOneAppPerTest with Injec
     "download given file" in {
       // setup
       val expectedFile = FileItem("1", "itemName", "fileName", "text/plain", "bucketItemId")
-      when(fileListServiceMock.getFileItem("1")).thenReturn(Future.successful(Some(expectedFile)))
+      when(fileListServiceMock.getItem("1")).thenReturn(Future.successful(Some(expectedFile)))
       val fileData = Array[Byte](1)
       when(googleBucketRepositoryMock.download(any())).thenReturn(fileData)
       // execute
@@ -76,7 +76,7 @@ class FileListControllerTest extends PlaySpec with GuiceOneAppPerTest with Injec
 
     "404 if id is not found" in {
       // setup
-      when(fileListServiceMock.getFileItem("1")).thenReturn(Future.successful(None))
+      when(fileListServiceMock.getItem("1")).thenReturn(Future.successful(None))
 
       // execute
       val result = sut.download("1").apply(FakeRequest(GET, "/download/1"))

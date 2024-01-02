@@ -13,29 +13,30 @@ GET     /files                      controllers.FileListController.getAllItemMet
 
 # search for a name
 # http://localhost:9000/search?projectId=testProject&name=Test
-GET    /search                      controllers.FileListController.search(projectId: String, name: String)
+GET     /search                     controllers.FileListController.search(projectId: String, name: String)
 
 # upload file with a name.
 # http://localhost:9000/upload?projectId=testProject
 # Note: Postmann add picture at Body with key file
 + nocsrf
-POST   /upload                      controllers.FileListController.upload(projectId: String)
+POST    /upload                     controllers.FileListController.upload(projectId: String)
 
 # download file with given id
-# http://localhost:9000/download?projectId=testProject&fileId=TEST
-GET    /download                controllers.FileListController.download(projectId : String, documentId: String)
+# http://localhost:9000/download?projectId=testProject&itemId=TEST
+GET     /download                   controllers.FileListController.download(projectId : String, itemId: String)
 
-# delete file for given project with fileId
-# http://localhost:9000/delete?projectId=testProject&documentId=TEST
-POST   /delete/                 controllers.FileListController.delete(projectId : String, documentId: String)
+# delete item for given project
+# http://localhost:9000/delete?projectId=testProject&itemId=TEST
+POST    /delete                     controllers.FileListController.delete(projectId : String, itemId: String)
 
-# delete all saved fileItem with given id - http://localhost:9000/deleteAll
-GET   /deleteAll                  controllers.FileListController.deleteAll()
+# delete all data of given project
+# http://localhost:9000/deleteProject?projectId=testProject
+GET     /deleteProject              controllers.FileListController.deleteProject(projectId : String)
 
 # start grabbing on vido stream. See /upload for debugging with a sample image
 # http://localhost:9000/startGrabbing?streamingUrl=rtmp://localhost/live"&projectId=testProject
-GET     /startGrabbing                   controllers.VideoGrabberController.startGrabbing(projectId: String, streamingUrl: String)
+GET     /startGrabbing              controllers.VideoGrabberController.startGrabbing(projectId: String, streamingUrl: String)
 
 # stop grabbing on vido stream
 # http://localhost:9000/stopGrabbing?projectId=testProject
-GET     /stopGrabbing                    controllers.VideoGrabberController.stopGrabbing(projectId: String)
+GET     /stopGrabbing               controllers.VideoGrabberController.stopGrabbing(projectId: String)
