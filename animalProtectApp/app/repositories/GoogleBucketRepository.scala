@@ -78,10 +78,10 @@ class GoogleBucketRepository @Inject() (configuration: Configuration, lifecycle:
   def deleteAll(projectId: String): Unit =
     val batch = storage.batch
     val blobs = storage
-      .list(googleBucketName, Storage.BlobListOption.currentDirectory, Storage.BlobListOption.prefix(projectId))
+      .list(googleBucketName, Storage.BlobListOption.prefix(projectId))
       .iterateAll
       .asScala
-
+    
     if blobs.isEmpty then
       logger.info(s"Bucket is empty")
       return
