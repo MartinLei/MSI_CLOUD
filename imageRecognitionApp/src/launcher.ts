@@ -6,20 +6,25 @@ import { KafakConsumer } from "./repository/KafakConsumer";
 import { KafkaProducer } from "./repository/KafakProducer";
 import { ExecuteImageJob } from "./services/ExecuteImageJob";
 import { ImageDetectorService } from "./services/ImageDetectorService";
+import os from 'os';
 
 const logger = Logger.getLogger("launcher");
 
 const app: express.Application = express();
 app.use(Helmet());
 
+// env
+const SERVER_PORT: string = process.env.SERVER_PORT || "9090";
+const KAFKA_SERVER: string = process.env.KAFKA_SERVER || "localhost:9092";
+
 // Start the server
-const SERVER_PORT = 9090;
+const hostname: string = os.hostname();
 const server = app.listen(SERVER_PORT, () => {
-  const servername = `http://localhost:${SERVER_PORT}`;
+  const servername = `http://${hostname}:${SERVER_PORT}`;
   logger.info(`Application is running on ${colors.yellow(servername)}`);
 });
 
-const kafkaProducer = new KafkaProducer("localhost:9092");
+const kafkaProducer = new KafkaProducer(KAFKA_SERVER);
 const imageDetectorService = new ImageDetectorService();
 const executeImageJob = new ExecuteImageJob(
   imageDetectorService,
@@ -27,7 +32,7 @@ const executeImageJob = new ExecuteImageJob(
 );
 const kafkaConsumer = new KafakConsumer(
   executeImageJob,
-  "localhost:9092",
+    KAFKA_SERVER,
   "image_recognition_app",
 );
 
