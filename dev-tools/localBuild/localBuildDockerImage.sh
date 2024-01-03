@@ -1,6 +1,7 @@
 #!/bin/sh
 
-# build docker images animalProtectpp
+# build docker images animalProtectApp
+# Note: Already done by githubAction
 sbt ";project animalProtectApp;dist"
 docker build -t animalprotect ./animalProtectApp/.
 
@@ -9,5 +10,6 @@ docker run -e APPLICATION_SECRET='49EOB:1M5<DOXLWa?1B>loWYjEb^tbWxVgm3H1[U`lh1=E
 
 
 # build docker images imageRecognitionApp
+# Note: Already done by githubAction
 docker build -t imagerecognitionapp ./imageRecognitionApp/.
 docker run -p 8080:8080 imagerecognitionapp
