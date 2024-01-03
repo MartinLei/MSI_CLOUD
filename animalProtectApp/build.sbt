@@ -26,8 +26,9 @@ val dependencies = Seq(
   "com.dripower" %% "play-circe" % "3014.1",
   // opencv
   "org.bytedeco" % "javacv" % "1.5.9",
-  "org.bytedeco" % "javacv-platform" % "1.5.9"
-
+  "org.bytedeco" % "javacv-platform" % "1.5.9",
+  // wrapper for jodatime
+  "com.github.nscala-time" %% "nscala-time" % "2.32.0"
 )
 
 lazy val animalProtectApp = project

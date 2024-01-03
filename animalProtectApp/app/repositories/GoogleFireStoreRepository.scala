@@ -58,12 +58,12 @@ class GoogleFireStoreRepository @Inject() (configuration: Configuration, lifecyc
                                            detectedObjectSerialized : String): Future[WriteResult] =
     db.collection(projectId)
       .document(documentId)
-      .update("detectedObjectSerialized", detectedObjectSerialized)
+      .update(Item.paramName_detectedObjectsSerialized, detectedObjectSerialized)
       .asScala
 
 
   def findByBucketId(projectId: String, bucketId: String): Future[Option[Item]] =
-    db.collection(projectId).whereEqualTo("bucketId", bucketId)
+    db.collection(projectId).whereEqualTo(Item.paramName_bucketId, bucketId)
       .get()
       .asScala
       .map(querySnapshot => querySnapshot.getDocuments.asScala.toSeq)

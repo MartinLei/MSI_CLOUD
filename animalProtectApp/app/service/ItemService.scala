@@ -13,9 +13,11 @@ import repositories.kafka.KafkaProducerRepository
 import repositories.kafka.model.{DetectedObject, ImageRecognitionJobMessage}
 import repositories.{GoogleBucketRepository, GoogleFireStoreRepository}
 import utils.{ImageHelper, ImageResizer}
+import com.github.nscala_time.time.Imports._
 import scala.concurrent.duration.*
 import java.nio.file.{Files, Path}
 import java.security.MessageDigest
+import java.time.LocalDateTime
 import javax.inject.Inject
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.{Await, Future}
@@ -61,7 +63,7 @@ class ItemService @Inject() (
     googleBucketRepository.upload(projectId, bucketId, path)
 
     // save meta data
-    val newItem = new Item("auto_add", fileName, contentType, bucketId, "")
+    val newItem = new Item("auto_add", fileName, contentType, DateTime.now().toString, bucketId, "")
     googleFireStoreRepository.save(projectId, newItem)
 
     // send imageRecognitionApp analyse job

@@ -23,8 +23,8 @@ class ItemController @Inject()(
   }
 
   def getAllItemMetadata(projectId: String): Action[AnyContent] = Action.async { implicit request =>
-    itemService.getAllItemMetadata(projectId).map { item =>
-      Ok(item.asJson)
+    itemService.getAllItemMetadata(projectId).map { itemDto =>
+      Ok(itemDto.asJson)
     }
   }
 
