@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: project-info-configmap
+data:
+  GOOGLE_PROJECT_ID: "spring-monolith-403010"
+  APPLICATION_SECRET: 49EOB:1M5<DOXLWa?1B>loWYjEb^tbWxVgm3H1[U`lh1=ER6^zt@ZmeD<aXJX7gR
+

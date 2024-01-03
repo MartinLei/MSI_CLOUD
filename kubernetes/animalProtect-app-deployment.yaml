@@ -1,0 +1,52 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: animalprotect-app
+spec:
+  replicas: 1
+  selector: 
+    matchLabels:
+      app: animalprotect
+  template:
+    metadata:
+      labels:
+        app: animalprotect
+    spec:
+      serviceAccountName: k8-secret-sa
+      containers:
+        - name: animalprotect
+          image: europe-west3-docker.pkg.dev/spring-monolith-403010/animalprotect-docker-repo/animalprotectapp:v1.1
+          ports:
+          - containerPort: 8080
+          env:
+            - name: GOOGLE_PROJECT_ID
+              valueFrom:
+                configMapKeyRef:
+                  name: project-info-configmap
+                  key: GOOGLE_PROJECT_ID
+            - name: APPLICATION_SECRET
+              valueFrom:
+                configMapKeyRef:
+                  name: project-info-configmap
+                  key: APPLICATION_SECRET
+#            - name: GOOGLE_BUCKET_NAME
+#              value: animalprotect-media-bucket
+#            - name: GOOGLE_BUCKET_SECRET_ID
+#              value: google_bucket_oauth
+#            - name: GOOGLE_BUCKET_VERSION_ID
+#              value: latest
+#            - name: GOOGLE_FIRESTORE_COLLECTION_ID
+#              value: TEST
+#            - name: GOOGLE_FIRESTORE_SECRET_ID
+#              value: google_firestore_oauth
+#            - name: GOOGLE_FIRESTORE_VERSION_ID
+#              value: latest
+#            - name: APPLICATION_SECRET
+#              value: 49EOB:1M5<DOXLWa?1B>loWYjEb^tbWxVgm3H1[U`lh1=ER6^zt@ZmeD<aXJX7gR
+          envFrom:
+            - secretRef:
+                name: google-bucket-secret
+            - secretRef:
+                name: google-firestore-secret
+#            - secretRef:
+#                name: sbt-application-secret
