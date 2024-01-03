@@ -41,7 +41,9 @@ export class ImageDetectorService {
     logger.info(`Load model: ${Math.floor(totalTime2)} ms`);
     logger.info(`Analyse: ${Math.floor(totalTime3)} ms`);
     logger.info(
-      `-- Finish analyse image. [bucketId: '${bucketId}', time: '${Math.floor(totalTime4,)}ms']`,
+      `-- Finish analyse image. [bucketId: '${bucketId}', time: '${Math.floor(
+        totalTime4,
+      )}ms']`,
     );
 
     return predictions;

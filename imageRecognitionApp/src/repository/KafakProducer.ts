@@ -1,10 +1,5 @@
 import { Kafka, Message, Producer, ProducerRecord } from "kafkajs";
 import { Logger } from "../utils/logger/logger";
-import * as Buffer from "buffer";
-import { DetectedObject } from "@tensorflow-models/coco-ssd";
-
-
-
 
 const logger = Logger.getLogger("kafkaProducer");
 

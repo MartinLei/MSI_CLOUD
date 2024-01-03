@@ -5,7 +5,7 @@ export class ImageJob {
   bucketId: string;
   imageByteArray: number[];
 
-  constructor(projectId : string, bucketId: string, imageByteArray: number[]) {
+  constructor(projectId: string, bucketId: string, imageByteArray: number[]) {
     this.projectId = projectId;
     this.bucketId = bucketId;
     this.imageByteArray = imageByteArray;
