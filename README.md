@@ -1,6 +1,5 @@
 ![animalProtectApp](https://github.com/MartinLei/MSI_CLOUD/actions/workflows/animalProtectAppAction.yml/badge.svg?branch=main)
 ![imageRecognitionApp](https://github.com/MartinLei/MSI_CLOUD/actions/workflows/imageRecognitionAppAction.yml/badge.svg?branch=main)
-[![codecov](https://codecov.io/gh/MartinLei/MSI_CLOUD/graph/badge.svg?token=07VSS5XNWE)](https://codecov.io/gh/MartinLei/MSI_CLOUD)
 
 # Animal Protect
 

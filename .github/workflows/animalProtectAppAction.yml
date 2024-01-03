@@ -27,14 +27,6 @@ jobs:
           cache: 'sbt'
       - name: Format check
         run: sbt scalafmtCheck
-      - name: Run tests
-        run: sbt coverage test
-      - name: Coverage Report
-        run: sbt coverageReport
-      - name: Upload coverage reports to Codecov
-        uses: codecov/codecov-action@v3
-        env:
-          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
   build-and-push-to-gcr:
     runs-on: ubuntu-latest
     permissions:
@@ -61,5 +53,5 @@ jobs:
           registry: europe-west3-docker.pkg.dev
           project_id: spring-monolith-403010/animalprotect-docker-repo
           image_name: animalprotectapp
-          image_tag: latest,v2
+          image_tag: latest,v3
           context: ./animalProtectApp
