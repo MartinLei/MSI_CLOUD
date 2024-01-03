@@ -6,7 +6,7 @@ import { KafakConsumer } from "./repository/KafakConsumer";
 import { KafkaProducer } from "./repository/KafakProducer";
 import { ExecuteImageJob } from "./services/ExecuteImageJob";
 import { ImageDetectorService } from "./services/ImageDetectorService";
-import os from 'os';
+import os from "os";
 
 const logger = Logger.getLogger("launcher");
 
@@ -32,7 +32,7 @@ const executeImageJob = new ExecuteImageJob(
 );
 const kafkaConsumer = new KafakConsumer(
   executeImageJob,
-    KAFKA_SERVER,
+  KAFKA_SERVER,
   "image_recognition_app",
 );
 
