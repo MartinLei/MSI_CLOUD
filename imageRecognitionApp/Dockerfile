@@ -1,4 +1,4 @@
-FROM node:16.20-buster
+FROM node:18.19.0-buster-slim
 
 ARG UID=1001
 ARG GID=1001

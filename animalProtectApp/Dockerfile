@@ -1,5 +1,8 @@
-FROM sbtscala/scala-sbt:eclipse-temurin-focal-17.0.9_9_1.9.7_3.3.1
-RUN apt-get update && apt-get install && apt-get install unzip --yes
+FROM sbtscala/scala-sbt:eclipse-temurin-jammy-21.0.1_12_1.9.8_3.3.1
+RUN apt-get update && \
+    apt-get install && \
+    apt-get install ffmpeg --yes && \
+    apt-get install unzip --yes
 
 ARG UID=1000
 ARG GID=1000
