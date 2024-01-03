@@ -12,11 +12,12 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 import scala.util.Failure
 import scala.util.Success
-class ItemController @Inject()(
-                                     val controllerComponents: ControllerComponents,
-                                     val itemService: ItemService,
-                                     val googleBucketRepository: GoogleBucketRepository
-) extends BaseController with Circe :
+class ItemController @Inject() (
+    val controllerComponents: ControllerComponents,
+    val itemService: ItemService,
+    val googleBucketRepository: GoogleBucketRepository
+) extends BaseController
+    with Circe:
 
   def index(): Action[AnyContent] = Action { implicit request: Request[AnyContent] =>
     Ok(views.html.index())

@@ -13,7 +13,7 @@ import repositories.kafka.KafkaProducerRepository
 import repositories.kafka.model.{DetectedObject, ImageRecognitionJobMessage}
 import repositories.{GoogleBucketRepository, GoogleFireStoreRepository}
 import utils.{ImageHelper, ImageResizer}
-import com.github.nscala_time.time.Imports._
+import com.github.nscala_time.time.Imports.*
 import scala.concurrent.duration.*
 import java.nio.file.{Files, Path}
 import java.security.MessageDigest
@@ -95,9 +95,12 @@ class ItemService @Inject() (
     val documentId = Await.result(item, 2.seconds)
 
     documentId.map(_.id) match
-      case None  => logger.info(s"Could not find bucketId to update detectedObjects. " +
-        s"[projectId: '$projectId', bucketId: '$bucketId']")
-      case Some(id) => {
+      case None =>
+        logger.info(
+          s"Could not find bucketId to update detectedObjects. " +
+            s"[projectId: '$projectId', bucketId: '$bucketId']"
+        )
+      case Some(id) =>
         val detectedObjectSerialized = detectedObject.asJson.noSpaces
         try
           val updatedItem = googleFireStoreRepository
@@ -105,4 +108,3 @@ class ItemService @Inject() (
           Await.result(updatedItem, 2.seconds)
         catch case e: Exception => logger.info(e.getMessage)
         logger.info(s"Update item with detectedObjects. [projectId: '$projectId', bucketId: '$bucketId']")
-      }

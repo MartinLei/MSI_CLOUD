@@ -21,8 +21,7 @@ import service.ItemService
 
 import scala.concurrent.duration.Duration
 
-class KafkaConsumerRepository @Inject() (lifecycle: ApplicationLifecycle, itemService: ItemService)
-    extends LazyLogging:
+class KafkaConsumerRepository @Inject() (lifecycle: ApplicationLifecycle, itemService: ItemService) extends LazyLogging:
   implicit val system: ActorSystem = ActorSystem("image_recognition_done")
   private val consumerSettings: ConsumerSettings[String, String] =
     ConsumerSettings(system, new StringDeserializer, new StringDeserializer)
@@ -40,7 +39,7 @@ class KafkaConsumerRepository @Inject() (lifecycle: ApplicationLifecycle, itemSe
     Flow[Message].map {
       case message: ImageRecognitionResultMessage =>
         logger.info(s"Receive imageRecognitionResult message with bucketId: ${message.bucketId}")
-        itemService.saveImageRecognition(message.projectId,message.bucketId, message.detectedObject)
+        itemService.saveImageRecognition(message.projectId, message.bucketId, message.detectedObject)
         NotUsed
       case _ =>
         logger.info("Received unknown message type")
