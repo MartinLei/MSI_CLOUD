@@ -27,12 +27,12 @@ POST    /delete                     controllers.ItemController.delete(projectId 
 
 # delete all data of given project
 # http://localhost:9000/deleteProject?projectId=testProject
-GET     /deleteProject              controllers.ItemController.deleteProject(projectId : String)
+POST     /deleteProject              controllers.ItemController.deleteProject(projectId : String)
 
 # start grabbing on vido stream. See /upload for debugging with a sample image
 # http://localhost:9000/startGrabbing?streamingUrl=rtmp://localhost/live"&projectId=testProject
-GET     /startGrabbing              controllers.VideoGrabberController.startGrabbing(projectId: String, streamingUrl: String)
+POST     /startGrabbing              controllers.VideoGrabberController.startGrabbing(projectId: String, streamingUrl: String)
 
 # stop grabbing on vido stream
 # http://localhost:9000/stopGrabbing?projectId=testProject
-GET     /stopGrabbing               controllers.VideoGrabberController.stopGrabbing(projectId: String)
+POST     /stopGrabbing               controllers.VideoGrabberController.stopGrabbing(projectId: String)

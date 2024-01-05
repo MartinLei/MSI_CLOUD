@@ -65,6 +65,7 @@ class ItemService @Inject() (
     // save meta data
     val newItem = new Item("will_be_filled_with_document_id", contentType, DateTime.now().toString, bucketId, "")
     val savedItem = Await.result(googleFireStoreRepository.save(projectId, newItem), 2.seconds)
+
     logger.info(s"Save image and send to imageRecognitionApp. [projectId:'$projectId', itemId: '${savedItem.itemId}']")
 
     // send imageRecognitionApp analyse job
@@ -80,8 +81,8 @@ class ItemService @Inject() (
       result <- maybeFileItem match
         case None =>
           Future.failed(new IllegalArgumentException(s"No item found. [projectId: '$projectId', itemId: '$itemId']"))
-        case Some(_) =>
-          googleBucketRepository.delete(projectId, itemId)
+        case Some(item) =>
+          googleBucketRepository.delete(projectId, item.bucketId)
           googleFireStoreRepository
             .delete(projectId, itemId)
             .map(_ => Some(itemId))
