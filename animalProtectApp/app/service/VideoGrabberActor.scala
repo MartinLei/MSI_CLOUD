@@ -16,6 +16,7 @@ import javax.imageio.ImageIO
 import scala.concurrent.ExecutionContextExecutor
 import scala.concurrent.duration.{Duration, DurationInt}
 import scala.language.postfixOps
+import org.bytedeco.ffmpeg.global.avutil._
 
 object VideoGrabberActor:
   def apply(itemService: ItemService, projectId: String, streamUrl: String): Props = Props(
@@ -35,6 +36,7 @@ final class VideoGrabberActor(itemService: ItemService, projectId: String, strea
 
   private val grabber: FFmpegFrameGrabber = FFmpegFrameGrabber.createDefault(streamUrl)
   FFmpegFrameGrabber.tryLoad()
+  av_log_set_level(AV_LOG_ERROR)
 
   var index: Int = 0 // TODO remove
   var shutdown: Boolean = false
