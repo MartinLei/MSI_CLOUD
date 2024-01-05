@@ -14,6 +14,8 @@ import repositories.kafka.model.{DetectedObject, ImageRecognitionJobMessage}
 import repositories.{GoogleBucketRepository, GoogleFireStoreRepository}
 import utils.{ImageHelper, ImageResizer}
 import com.github.nscala_time.time.Imports.*
+import com.google.cloud.storage.Acl.Project
+
 import scala.concurrent.duration.*
 import java.nio.file.{Files, Path}
 import java.security.MessageDigest
@@ -47,7 +49,19 @@ class ItemService @Inject() (
 
     addItem(projectId, path)
 
+  private def removeOldestImage(projectId: String, threshold: Int): Unit =
+    val sortedItems = Await
+      .result(googleFireStoreRepository.findAll(projectId), 2.second)
+      .sortBy(item => DateTime.parse(item.captureTime))
+
+    if sortedItems.size >= threshold then
+      val itemIdOld = sortedItems.head.itemId
+      logger.info(s"Remove oldest item. [projectId:'$projectId', itemId: '$itemIdOld']")
+      deleteItem(projectId,itemIdOld)
+
   def addItem(projectId: String, path: Path): Unit =
+    removeOldestImage(projectId, 5)
+
     val contentType: String = Option(Files.probeContentType(path)) match
       case Some(contentType) => contentType
       case None              => "image/png"
