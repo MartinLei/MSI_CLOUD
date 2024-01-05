@@ -45,25 +45,24 @@ class ItemService @Inject() (
     addItem(projectId, path)
 
   def addItem(projectId: String, path: Path): Unit =
-    val fileName: String = path.getFileName.getFileName.toString
     val contentType: String = Option(Files.probeContentType(path)) match
       case Some(contentType) => contentType
       case None              => "image/png"
 
-    logger.info(s"Save image and send to imageRecognitionApp. [projectId:'$projectId', fileName: '$fileName']")
-
     val bucketId = MessageDigest
       .getInstance("SHA-256")
-      .digest(System.nanoTime().toString.getBytes ++ fileName.getBytes("UTF-8"))
+      .digest(System.nanoTime().toString.getBytes)
       .map("%02X".format(_))
       .mkString
       .take(10)
+
+    logger.info(s"Save image and send to imageRecognitionApp. [projectId:'$projectId', bucketId: '$bucketId']")
 
     // save image
     googleBucketRepository.upload(projectId, bucketId, path)
 
     // save meta data
-    val newItem = new Item("auto_add", fileName, contentType, DateTime.now().toString, bucketId, "")
+    val newItem = new Item("will_be_filled_with_document_id", contentType, DateTime.now().toString, bucketId, "")
     googleFireStoreRepository.save(projectId, newItem)
 
     // send imageRecognitionApp analyse job

@@ -14,7 +14,6 @@ import scala.beans.BeanProperty
 
 case class ItemDto(
                     itemId: String,
-                    name: String,
                     contentType: String,
                     captureTime: String,
                     detectedObjects: List[DetectedObject]
@@ -24,7 +23,6 @@ object ItemDto:
   def from(item: Item): ItemDto =
     ItemDto(
       itemId = item.itemId,
-      name = item.name,
       contentType = item.contentType,
       captureTime = item.captureTime,
       detectedObjects = item.detectedObjects
@@ -34,13 +32,12 @@ object ItemDto:
   */
 case class Item(
                  @BeanProperty var itemId: String,
-                 @BeanProperty var name: String,
                  @BeanProperty var contentType: String,
                  @BeanProperty var captureTime: String,
                  @BeanProperty var bucketId: String,
                  @BeanProperty var detectedObjectsSerialized: String
 ):
-  def this() = this("", "", "", DateTime.now().toString, "", "")
+  def this() = this("", "", "", "", "")
 
   def detectedObjects: List[DetectedObject] = decode[List[DetectedObject]](this.detectedObjectsSerialized) match
     case Left(df: DecodingFailure) => List.empty
@@ -52,4 +49,4 @@ object Item:
   val paramName_detectedObjectsSerialized = "detectedObjectsSerialized"
   val paramName_bucketId = "bucketId"
   def apply(id: String, item: Item): Item =
-    Item(id, item.name, item.contentType, item.captureTime, item.bucketId, item.detectedObjectsSerialized)
+    Item(id, item.contentType, item.captureTime, item.bucketId, item.detectedObjectsSerialized)

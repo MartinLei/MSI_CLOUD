@@ -40,7 +40,7 @@ class ItemController @Inject() (
       case Some(item) =>
         Ok(googleBucketRepository.download(projectId, item.bucketId))
           .as(item.contentType)
-          .withHeaders("Content-Disposition" -> s"attachment; filename=${item.name}")
+          .withHeaders("Content-Disposition" -> s"attachment; filename=${item.itemId}_${item.captureTime}")
       case None =>
         NotFound("File not found")
     }
