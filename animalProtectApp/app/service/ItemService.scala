@@ -33,13 +33,7 @@ class ItemService @Inject() (
       items <- googleFireStoreRepository.findAll(projectId)
       itemsDto = items.map(item => ItemDto.from(item))
     yield ItemsDto(itemsDto)
-
-  def search(projectId: String, fileName: String): Future[ItemsDto] =
-    for
-      items <- googleFireStoreRepository.search(projectId, fileName)
-      itemsDto = items.map(item => ItemDto.from(item))
-    yield ItemsDto(itemsDto)
-
+  
   def addItem(projectId: String, filePart: FilePart[TemporaryFile]): Unit =
     val path = ImageResizer.resize(filePart.ref.path)
     addItem(projectId, path)

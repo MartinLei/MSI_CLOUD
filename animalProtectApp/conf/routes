@@ -11,10 +11,6 @@ GET     /                           controllers.ItemController.index()
 # http://localhost:9000/items?projectId=testProject
 GET     /items                      controllers.ItemController.getAllItemMetadata(projectId: String)
 
-# search for a name
-# http://localhost:9000/search?projectId=testProject&name=Test
-GET     /search                     controllers.ItemController.search(projectId: String, name: String)
-
 # upload file with a name.
 # http://localhost:9000/upload?projectId=testProject
 # Note: Postmann add picture at Body with key file

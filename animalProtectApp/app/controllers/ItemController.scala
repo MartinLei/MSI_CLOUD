@@ -29,12 +29,6 @@ class ItemController @Inject() (
     }
   }
 
-  def search(projectId: String, fileName: String): Action[AnyContent] = Action.async { implicit request =>
-    itemService.search(projectId, fileName).map { item =>
-      Ok(item.asJson)
-    }
-  }
-
   def download(projectId: String, itemId: String): Action[AnyContent] = Action.async { request =>
     itemService.getItem(projectId, itemId).map {
       case Some(item) =>

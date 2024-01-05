@@ -84,15 +84,7 @@ class GoogleFireStoreRepository @Inject() (configuration: Configuration, lifecyc
       .get()
       .asScala
       .map(queryDocumentSnapshot => Some(queryDocumentSnapshot.toObject(classOf[Item])))
-
-  def search(projectId: String, name: String): Future[Seq[Item]] =
-    db.collection(projectId)
-      .where(Filter.or(Filter.equalTo("itemName", name), Filter.equalTo("fileName", name))) // TODO
-      .get()
-      .asScala
-      .map(querySnapshot => querySnapshot.getDocuments.asScala.toSeq)
-      .map(seqQuerySnapshot => seqQuerySnapshot.map(toItem))
-
+  
   def delete(projectId: String, itemId: String): Future[String] =
     db.collection(projectId)
       .document(itemId)
