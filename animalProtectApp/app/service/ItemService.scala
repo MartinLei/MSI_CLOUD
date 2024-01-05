@@ -57,7 +57,7 @@ class ItemService @Inject() (
     if sortedItems.size >= threshold then
       val itemIdOld = sortedItems.head.itemId
       logger.info(s"Remove oldest item. [projectId:'$projectId', itemId: '$itemIdOld']")
-      deleteItem(projectId,itemIdOld)
+      deleteItem(projectId, itemIdOld)
 
   def addItem(projectId: String, path: Path): Unit =
     removeOldestImage(projectId, 5)

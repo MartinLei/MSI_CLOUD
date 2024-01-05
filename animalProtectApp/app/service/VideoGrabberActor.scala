@@ -16,7 +16,7 @@ import javax.imageio.ImageIO
 import scala.concurrent.ExecutionContextExecutor
 import scala.concurrent.duration.{Duration, DurationInt}
 import scala.language.postfixOps
-import org.bytedeco.ffmpeg.global.avutil._
+import org.bytedeco.ffmpeg.global.avutil.*
 
 object VideoGrabberActor:
   def apply(itemService: ItemService, projectId: String, streamUrl: String): Props = Props(
