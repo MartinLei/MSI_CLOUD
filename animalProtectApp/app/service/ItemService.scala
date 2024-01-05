@@ -33,9 +33,19 @@ class ItemService @Inject() (
       items <- googleFireStoreRepository.findAll(projectId)
       itemsDto = items.map(item => ItemDto.from(item))
     yield ItemsDto(itemsDto)
-  
+
   def addItem(projectId: String, filePart: FilePart[TemporaryFile]): Unit =
     val path = ImageResizer.resize(filePart.ref.path)
+    try {
+      val fileSizeOld = Files.size(filePart.ref.path)
+      val fileSize = Files.size(path)
+      logger.info(s"Resized image. [old:'$fileSizeOld', new:'$fileSize']")
+    } catch {
+      case e: Exception =>
+        logger.info("Unable to get file size: " + e.getMessage)
+        return
+    }
+
     addItem(projectId, path)
 
   def addItem(projectId: String, path: Path): Unit =
@@ -50,14 +60,13 @@ class ItemService @Inject() (
       .mkString
       .take(10)
 
-    logger.info(s"Save image and send to imageRecognitionApp. [projectId:'$projectId', bucketId: '$bucketId']")
-
     // save image
     googleBucketRepository.upload(projectId, bucketId, path)
 
     // save meta data
     val newItem = new Item("will_be_filled_with_document_id", contentType, DateTime.now().toString, bucketId, "")
-    googleFireStoreRepository.save(projectId, newItem)
+    val savedItem = Await.result(googleFireStoreRepository.save(projectId, newItem), 2.seconds)
+    logger.info(s"Save image and send to imageRecognitionApp. [projectId:'$projectId', itemId: '${savedItem.itemId}']")
 
     // send imageRecognitionApp analyse job
     val message = ImageRecognitionJobMessage(projectId, bucketId, ImageHelper.readImageFromPath(path, contentType))

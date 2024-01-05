@@ -79,10 +79,7 @@ final class VideoGrabberActor(itemService: ItemService, projectId: String, strea
       return
 
     index = index + 1
-    val filename = s"output_${index}_${Calendar.getInstance().getTime}.png"
-    val reducedBufferedImage = ImageResizer.resize(bufferedImage)
-    val tempFile = Files.createTempFile(filename, ".png")
-    ImageIO.write(reducedBufferedImage, "png", tempFile.toFile)
+    val tempFile = ImageResizer.resize(bufferedImage)
     itemService.addItem(projectId, tempFile)
     context.system.scheduler.scheduleOnce(1.second, self, GrabNextFrame())
 

@@ -46,12 +46,12 @@ class GoogleFireStoreRepository @Inject() (configuration: Configuration, lifecyc
     .build
     .getService
 
-  def save(projectId: String, item: Item): Future[Int] =
-    logger.info(s"Upload metadate to firestore.  [projectId: '$projectId']")
+  def save(projectId: String, item: Item): Future[Item] =
     db.collection(projectId)
       .add(item)
       .asScala
-      .map(documentReference => documentReference.getId.toInt)
+      .map(documentReference => documentReference.getId)
+      .map(itemId => Item(itemId, item))
 
   def updateField_detectedObjectSerialized(
       projectId: String,
@@ -83,14 +83,15 @@ class GoogleFireStoreRepository @Inject() (configuration: Configuration, lifecyc
       .document(itemId)
       .get()
       .asScala
-      .map(queryDocumentSnapshot => Some(queryDocumentSnapshot.toObject(classOf[Item])))
-  
+      .map(toItem)
+      .map(Some(_))
+
   def delete(projectId: String, itemId: String): Future[String] =
     db.collection(projectId)
       .document(itemId)
       .delete()
       .asScala
-      .map(w => itemId)
+      .map(_ => itemId)
 
   /** Only used for debugging purpose. For deleting all files in the bucket.
     */
@@ -107,7 +108,7 @@ class GoogleFireStoreRepository @Inject() (configuration: Configuration, lifecyc
     batch.commit()
     logger.info(s"Delete all ${documents.size} entries in fileStore of collection $projectId")
 
-  def toItem: QueryDocumentSnapshot => Item =
-    queryDocumentSnapshot =>
-      val fileItem: Item = queryDocumentSnapshot.toObject(classOf[Item])
-      Item.apply(queryDocumentSnapshot.getId, fileItem)
+  private def toItem: DocumentSnapshot => Item =
+    documentSnapshot =>
+      val fileItem: Item = documentSnapshot.toObject(classOf[Item])
+      Item.apply(documentSnapshot.getId, fileItem)
