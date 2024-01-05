@@ -36,15 +36,14 @@ class ItemService @Inject() (
 
   def addItem(projectId: String, filePart: FilePart[TemporaryFile]): Unit =
     val path = ImageResizer.resize(filePart.ref.path)
-    try {
+    try
       val fileSizeOld = Files.size(filePart.ref.path)
       val fileSize = Files.size(path)
       logger.info(s"Resized image. [old:'$fileSizeOld', new:'$fileSize']")
-    } catch {
+    catch
       case e: Exception =>
         logger.info("Unable to get file size: " + e.getMessage)
         return
-    }
 
     addItem(projectId, path)
 

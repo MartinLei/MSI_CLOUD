@@ -13,10 +13,10 @@ import java.util.Date
 import scala.beans.BeanProperty
 
 case class ItemDto(
-                    itemId: String,
-                    contentType: String,
-                    captureTime: String,
-                    detectedObjects: List[DetectedObject]
+    itemId: String,
+    contentType: String,
+    captureTime: String,
+    detectedObjects: List[DetectedObject]
 )
 
 object ItemDto:
@@ -31,11 +31,11 @@ object ItemDto:
 /** Using @BeanProperty for creating java getter and setter.
   */
 case class Item(
-                 @BeanProperty var itemId: String,
-                 @BeanProperty var contentType: String,
-                 @BeanProperty var captureTime: String,
-                 @BeanProperty var bucketId: String,
-                 @BeanProperty var detectedObjectsSerialized: String
+    @BeanProperty var itemId: String,
+    @BeanProperty var contentType: String,
+    @BeanProperty var captureTime: String,
+    @BeanProperty var bucketId: String,
+    @BeanProperty var detectedObjectsSerialized: String
 ):
   def this() = this("", "", "", "", "")
 

@@ -25,7 +25,6 @@ object ImageResizer:
       // Create a temporary file to store the resized image
       val tempFilePath: Path = Files.createTempFile("resized_image_", ".jpg")
 
-
       // Write the resized image to the temporary file
       ImageIO.write(resizedImage, "png", tempFilePath.toFile)
       tempFilePath

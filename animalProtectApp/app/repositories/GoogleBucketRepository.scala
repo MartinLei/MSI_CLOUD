@@ -81,7 +81,7 @@ class GoogleBucketRepository @Inject() (configuration: Configuration, lifecycle:
       .list(googleBucketName, Storage.BlobListOption.prefix(projectId))
       .iterateAll
       .asScala
-    
+
     if blobs.isEmpty then
       logger.info(s"Bucket is empty")
       return
