@@ -15,7 +15,7 @@ You could upload files. See all uploaded files and also download wanted files.
 - For using the rtmp_server video stream use the address 'rtmp://rtmp_server/live'
 
 ## Run for development
-1. Start the rtmp stream /dev/tools/rtmp_server.
+1. Start the rtmp stream server /dev/tools/rtmp_server ```docker compose up```.
 2. Start kafka ```docker compose -f zk-single-kafka-single.yml up```
    - add environment variable to given yml
    - ```KAFKA_MESSAGE_MAX_BYTES: 4194304 ```

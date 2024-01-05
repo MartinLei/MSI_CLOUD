@@ -94,7 +94,7 @@ class ItemService @Inject() (
     val item = googleFireStoreRepository.findByBucketId(projectId, bucketId)
     val documentId = Await.result(item, 2.seconds)
 
-    documentId.map(_.id) match
+    documentId.map(_.itemId) match
       case None =>
         logger.info(
           s"Could not find bucketId to update detectedObjects. " +
